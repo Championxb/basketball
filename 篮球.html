@@ -1,0 +1,399 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>篮球场馆智能监控</title>
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cal+Sans:ital,wght@0,400;0,600;0,700&family=Noto+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css">
+  <!-- Import Map -->
+  <script type="importmap">
+  {
+    "imports": {
+      "chart.js": "https://esm.sh/chart.js@4.4.1",
+      "dayjs": "https://esm.sh/dayjs@1.11.11"
+    }
+  }
+  </script>
+</head>
+<body>
+  <header class="topbar" role="banner">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true">🏀</span>
+      <span class="brand-name">篮球场馆智能监控</span>
+    </div>
+    <div class="topbar-actions">
+      <button id="simulateToggle" class="btn" aria-pressed="true">暂停模拟</button>
+      <button id="darkToggle" class="btn" aria-pressed="false">暗色模式</button>
+    </div>
+  </header>
+
+  <nav class="tabs" role="navigation" aria-label="主导航">
+    <button class="tab active" data-tab="overview"><span class="tab-label">总览</span></button>
+    <button class="tab" data-tab="devices"><span class="tab-label">设备</span><span class="tab-badge" id="badge-devices">0/0</span></button>
+    <button class="tab" data-tab="schedule"><span class="tab-label">日程</span><span class="tab-badge" id="badge-schedule">0</span></button>
+    <button class="tab" data-tab="alerts"><span class="tab-label">报警</span><span class="tab-badge" id="badge-alerts">0</span></button>
+    <button class="tab" data-tab="energy"><span class="tab-label">能耗</span><span class="tab-badge" id="badge-energy">0</span></button>
+    <button class="tab" data-tab="environment"><span class="tab-label">环境</span><span class="tab-badge" id="badge-env">--</span></button>
+    <button class="tab" data-tab="visitors"><span class="tab-label">访客</span><span class="tab-badge" id="badge-visitors">0</span></button>
+    <button class="tab" data-tab="settings"><span class="tab-label">设置</span></button>
+  </nav>
+
+  <main class="container">
+    <!-- 总览 -->
+    <section id="tab-overview" class="tab-panel active" aria-label="总览">
+      <div class="grid">
+        <div class="card span-2">
+          <div class="card-header">
+            <h2>实时状态</h2>
+            <span id="nowTime" class="muted"></span>
+          </div>
+          <div class="stats">
+            <div class="stat">
+              <div class="stat-label">在场人数</div>
+              <div class="stat-value" id="totalPeople">0</div>
+            </div>
+            <div class="stat">
+              <div class="stat-label">场地占用</div>
+              <div class="stat-value" id="courtUsage">0/4</div>
+            </div>
+            <div class="stat">
+              <div class="stat-label">平均温度</div>
+              <div class="stat-value" id="avgTemp">--°C</div>
+            </div>
+            <div class="stat">
+              <div class="stat-label">空气质量</div>
+              <div class="stat-value" id="aqi">优</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h2>占用趋势</h2>
+          </div>
+          <canvas id="occupancyChart" aria-label="占用趋势图" role="img"></canvas>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h2>场地利用率</h2>
+          </div>
+          <canvas id="utilChart" aria-label="利用率柱状图" role="img"></canvas>
+        </div>
+
+        <div class="card span-2">
+          <div class="card-header">
+            <h2>实时画面</h2>
+            <div class="feeds-actions">
+              <button class="btn ghost" id="refreshFeeds">刷新画面</button>
+            </div>
+          </div>
+          <div class="feeds">
+            <figure class="feed">
+              <img src="https://images.unsplash.com/photo-1519866663826-7e1967cbada1?q=80&w=1080&auto=format&fit=crop" alt="场地A摄像头实时画面">
+              <figcaption>场地 A</figcaption>
+            </figure>
+            <figure class="feed">
+              <img src="https://images.unsplash.com/photo-1483721310020-03333e577078?q=80&w=1080&auto=format&fit=crop" alt="场地B摄像头实时画面">
+              <figcaption>场地 B</figcaption>
+            </figure>
+            <figure class="feed">
+              <img src="https://images.unsplash.com/photo-1483721310020-03333e577078?q=80&w=1080&auto=format&fit=crop" alt="入口通道摄像头">
+              <figcaption>入口通道</figcaption>
+            </figure>
+            <figure class="feed">
+              <img src="https://images.unsplash.com/photo-1518020382113-a7e8fc38eac9?q=80&w=1080&auto=format&fit=crop" alt="看台摄像头">
+              <figcaption>看台</figcaption>
+            </figure>
+          </div>
+        </div>
+
+        <div class="card span-2">
+          <div class="card-header">
+            <h2>场地详情</h2>
+          </div>
+          <div class="courts">
+            <div class="court" id="court-A">
+              <div class="court-head">
+                <span class="court-name">A场</span>
+                <span class="badge" data-status="idle">空闲</span>
+              </div>
+              <div class="court-body">
+                <div>人数：<span class="value people">0</span></div>
+                <div>温度：<span class="value temp">--°C</span></div>
+                <div>湿度：<span class="value humid">--%</span></div>
+                <div>灯光：<span class="value light">自动</span></div>
+              </div>
+              <div class="court-actions">
+                <button class="btn small" data-action="toggle-light" aria-controls="court-A">切换灯光</button>
+                <button class="btn small ghost" data-action="reserve" aria-controls="court-A">预约</button>
+              </div>
+            </div>
+            <div class="court" id="court-B">
+              <div class="court-head">
+                <span class="court-name">B场</span>
+                <span class="badge" data-status="busy">使用中</span>
+              </div>
+              <div class="court-body">
+                <div>人数：<span class="value people">0</span></div>
+                <div>温度：<span class="value temp">--°C</span></div>
+                <div>湿度：<span class="value humid">--%</span></div>
+                <div>灯光：<span class="value light">自动</span></div>
+              </div>
+              <div class="court-actions">
+                <button class="btn small" data-action="toggle-light" aria-controls="court-B">切换灯光</button>
+                <button class="btn small ghost" data-action="reserve" aria-controls="court-B">预约</button>
+              </div>
+            </div>
+            <div class="court" id="court-C">
+              <div class="court-head">
+                <span class="court-name">C场</span>
+                <span class="badge" data-status="idle">空闲</span>
+              </div>
+              <div class="court-body">
+                <div>人数：<span class="value people">0</span></div>
+                <div>温度：<span class="value temp">--°C</span></div>
+                <div>湿度：<span class="value humid">--%</span></div>
+                <div>灯光：<span class="value light">自动</span></div>
+              </div>
+              <div class="court-actions">
+                <button class="btn small" data-action="toggle-light" aria-controls="court-C">切换灯光</button>
+                <button class="btn small ghost" data-action="reserve" aria-controls="court-C">预约</button>
+              </div>
+            </div>
+            <div class="court" id="court-D">
+              <div class="court-head">
+                <span class="court-name">D场</span>
+                <span class="badge" data-status="maintain">维护中</span>
+              </div>
+              <div class="court-body">
+                <div>人数：<span class="value people">0</span></div>
+                <div>温度：<span class="value temp">--°C</span></div>
+                <div>湿度：<span class="value humid">--%</span></div>
+                <div>灯光：<span class="value light">关闭</span></div>
+              </div>
+              <div class="court-actions">
+                <button class="btn small" data-action="toggle-light" aria-controls="court-D">切换灯光</button>
+                <button class="btn small ghost" data-action="reserve" aria-controls="court-D" disabled>预约</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h2>报警</h2>
+          </div>
+          <ul id="alertList" class="list"></ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 设备 -->
+    <section id="tab-devices" class="tab-panel" aria-label="设备">
+      <div class="card">
+        <div class="card-header">
+          <h2>设备在线率</h2>
+        </div>
+        <div class="devices">
+          <div class="device" data-total="8" data-online="7">
+            <div class="device-name">摄像头（8）</div>
+            <div class="device-status ok">7 在线</div>
+          </div>
+          <div class="device" data-total="12" data-online="12">
+            <div class="device-name">温湿度传感器（12）</div>
+            <div class="device-status ok">12 在线</div>
+          </div>
+          <div class="device" data-total="4" data-online="3">
+            <div class="device-name">灯控模块（4）</div>
+            <div class="device-status warn">3 在线</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 日程 -->
+    <section id="tab-schedule" class="tab-panel" aria-label="日程">
+      <div class="card">
+        <div class="card-header">
+          <h2>今日安排</h2>
+          <button class="btn ghost" id="addSchedule">新建</button>
+        </div>
+        <ul id="scheduleList" class="list"></ul>
+      </div>
+    </section>
+
+    <!-- 报警 -->
+    <section id="tab-alerts" class="tab-panel" aria-label="报警">
+      <div class="card">
+        <div class="card-header">
+          <h2>报警记录</h2>
+          <button class="btn ghost" id="clearAlerts">清空</button>
+        </div>
+        <ul id="alertHistory" class="list"></ul>
+      </div>
+    </section>
+
+    <!-- 能耗 -->
+    <section id="tab-energy" class="tab-panel" aria-label="能耗">
+      <div class="card">
+        <div class="card-header"><h2>今日能耗估算</h2></div>
+        <ul class="list" id="energyList">
+          <li><span>照明功率（估）</span><span class="tag">-- kW</span></li>
+          <li><span>累计用电（估）</span><span class="tag">-- kWh</span></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 环境 -->
+    <section id="tab-environment" class="tab-panel" aria-label="环境">
+      <div class="card">
+        <div class="card-header"><h2>环境概览</h2></div>
+        <ul class="list" id="envList">
+          <li><span>平均温度</span><span class="tag" id="envAvgTemp">--°C</span></li>
+          <li><span>平均湿度</span><span class="tag" id="envAvgHumid">--%</span></li>
+          <li><span>空气质量</span><span class="tag" id="envAQI">--</span></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 访客 -->
+    <section id="tab-visitors" class="tab-panel" aria-label="访客">
+      <div class="card">
+        <div class="card-header"><h2>访客统计</h2></div>
+        <ul class="list" id="visitorsList">
+          <li><span>当前在馆</span><span class="tag" id="visitorsNow">0</span></li>
+          <li><span>今日累计</span><span class="tag" id="visitorsToday">0</span></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 设置 -->
+    <section id="tab-settings" class="tab-panel" aria-label="设置">
+      <div class="card">
+        <div class="card-header"><h2>系统设置</h2></div>
+        <ul class="list">
+          <li><span>暗色模式</span><button class="btn small" id="settingsDark">切换</button></li>
+          <li><span>清空数据</span><button class="btn small ghost" id="settingsReset">重置</button></li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer" role="contentinfo">
+    <span>© 场馆智能监控</span>
+    <span class="muted">演示数据 · 非真实监控</span>
+  </footer>
+
+  <script type="module" src="./app.js"></script>
+</body>
+</html>
+<style>
+:root {
+  --bg: #f7fbff;
+  --text: #081124;
+  --muted: #6b7f91;
+  --border: rgba(12,34,56,0.08);
+  --accent: #36d1ff;
+  --accent-2: #7b61ff;
+  --ok: #28d08a;
+  --warn: #ffb64d;
+  --danger: #ff6b6b;
+}
+
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0;
+  font-family: "Cal Sans", "Noto Sans", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  background: radial-gradient(1200px 600px at 10% 10%, rgba(54,209,255,0.06), transparent),
+              radial-gradient(900px 400px at 90% 90%, rgba(123,97,255,0.04), transparent),
+              var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Topbar */
+.topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 20px; border-bottom: 1px solid var(--border);
+}
+.brand { display: flex; align-items: center; gap: 10px; font-weight: 700; }
+.brand-mark { font-size: 20px; color: var(--accent); background: linear-gradient(90deg,var(--accent),var(--accent-2)); -webkit-background-clip: text; background-clip: text; filter: drop-shadow(0 8px 22px rgba(54,209,255,0.08)); }
+.brand-name { font-size: 18px; letter-spacing: .6px; color: linear-gradient; }
+.topbar { backdrop-filter: blur(6px) saturate(120%); background: rgba(255,255,255,0.04); border-bottom: 1px solid rgba(12,34,56,0.04); border-radius: 14px; padding: 18px 20px; }
+
+/* Tabs */
+.tabs { display: flex; gap: 8px; padding: 10px 20px; border-bottom: 1px solid var(--border); overflow-x: auto; }
+.tab { flex: 0 0 auto; }
+.tab {
+  appearance: none; border: 1px solid transparent; background: rgba(255,255,255,0.03); color: var(--muted);
+  padding: 8px 14px; border-radius: 999px; cursor: pointer; box-shadow: inset 0 -1px 0 rgba(12,34,56,0.02);
+}
+.tab.active { background: linear-gradient(90deg, rgba(54,209,255,0.12), rgba(123,97,255,0.06)); color: var(--accent); border-color: transparent; box-shadow: 0 6px 18px rgba(54,209,255,0.06); }
+.tab:focus-visible { outline: 2px solid #000; outline-offset: 2px; }
+.tab-badge {
+  margin-left: 6px; padding: 2px 6px; border: 1px solid var(--border);
+  border-radius: 999px; font-size: 12px; color: var(--muted); background: transparent;
+}
+
+/* Container & Grid */
+.container { padding: 20px; max-width: 1200px; margin: 0 auto; }
+.grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+@media (min-width: 1024px) { .grid { grid-template-columns: repeat(3, 1fr); } }
+.span-2 { grid-column: span 2; }
+
+/* Card */
+.card {
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  overflow: hidden;
+  background: linear-gradient(180deg, rgba(255,255,255,0.6), rgba(255,255,255,0.25));
+  box-shadow: 0 8px 30px rgba(54,209,255,0.06), inset 0 1px 0 rgba(255,255,255,0.6);
+  transition: transform .18s ease, box-shadow .18s ease;
+}
+.card:hover { transform: translateY(-6px) scale(1.006); box-shadow: 0 18px 40px rgba(54,209,255,0.08); }
+.card-header { display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; border-bottom: 1px solid var(--border); }
+.card h2 { font-size: 16px; margin: 0; }
+
+/* Stats */
+.stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; padding: 12px; }
+.stat { padding: 12px; border-radius: 14px; background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border: 1px solid rgba(12,34,56,0.03); }
+.stat-label { font-size: 12px; color: var(--muted); }
+.stat-value { color: linear-gradient; background: linear-gradient(90deg,var(--accent),var(--accent-2)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; font-family: "Cal Sans", ui-monospace, monospace; }
+
+/* Feeds */
+.feeds { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 12px; }
+.feed { margin: 0; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+.feed img { display: block; width: 100%; height: 160px; object-fit: cover; }
+.feed figcaption { font-size: 12px; padding: 8px 10px; color: var(--muted); }
+
+/* Courts */
+.courts { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 12px; }
+.court { border: 1px solid var(--border); border-radius: 10px; padding: 10px; display: flex; flex-direction: column; gap: 8px; }
+.court-head { display: flex; justify-content: space-between; align-items: center; }
+.court-name { font-weight: 600; }
+.badge { font-size: 12px; padding: 6px 10px; border-radius: 999px; border: 1px solid rgba(12,34,56,0.04); background: rgba(255,255,255,0.02); box-shadow: inset 0 -6px 18px rgba(7,29,40,0.02); }
+.badge[data-status="busy"] { color: #fff; background: linear-gradient(90deg,var(--accent-2),var(--accent)); border-color: transparent; box-shadow: 0 6px 20px rgba(123,97,255,0.08); }
+.badge[data-status="idle"] { color: var(--muted); background: rgba(255,255,255,0.015); }
+.badge[data-status="maintain"] { background: rgba(255,182,77,0.06); color: var(--warn); border-color: rgba(255,182,77,0.08); }
+.court-body .value { font-weight: 600; }
+.court-actions { display: flex; gap: 8px; }
+
+/* Devices */
+.devices { padding: 12px; display: grid; gap: 8px; }
+.device { display: flex; justify-content: space-between; border: 1px dashed var(--border); border-radius: 8px; padding: 10px; }
+.device-status.ok { color: var(--ok); }
+.device-status.warn { color: var(--warn); }
+
+/* Lists */
+.list { list-style: none; margin: 0; padding: 10px; display: grid; gap: 8px; }
+.list li { border: 1px solid var(--border); border-radius: 10px; padding: 10px; display: flex; justify-content: space-between; align-items: center; }
+.list .tag { font-size: 12px; padding: 4px 6px; border: 1px solid var(--border); border-radius: 6px; }
+.list .tag.warn { border-color: var(--warn); color: var(--warn); }
+.list .tag.danger { border-color: var(--danger); color: var(--danger); }
+</style>
