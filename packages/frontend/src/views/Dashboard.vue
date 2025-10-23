@@ -15,6 +15,11 @@ import { useBasketballStore } from '../composables/useBasketballStore';
 const tabs = ['overview','devices','schedule','alerts','energy','environment','visitors','settings'];
 const currentTab = ref('overview');
 const store = useBasketballStore();
+const changeTab = (t) => {
+  if (tabs.includes(t)) {
+    currentTab.value = t;
+  }
+}
 </script>
 
 <template>
@@ -27,7 +32,7 @@ const store = useBasketballStore();
   </header>
 
   <nav class="tabs" role="navigation" aria-label="主导航">
-    <Tabs :current="currentTab" :store="store" @change="t => currentTab.value = t" />
+    <Tabs :current="currentTab" :store="store" @change="changeTab" />
   </nav>
 
   <main class="container">
@@ -43,6 +48,6 @@ const store = useBasketballStore();
 
   <footer class="footer" role="contentinfo">
     <span>© 场馆智能监控</span>
-    <span class="muted">演示数据 · 非真实监控</span>
+    <!-- <span class="muted">演示数据 · 非真实监控</span> -->
   </footer>
 </template>

@@ -11,12 +11,25 @@ const tabs = [
   { key:'visitors', label:'访客', badge: () => props.store.state.visitors.now },
   { key:'settings', label:'设置' },
 ];
+const changeTab = (t) => {
+  // console.log(t)
+  emit('change', t.key)
+}
 </script>
 <template>
   <template v-for="t in tabs" :key="t.key">
-    <button class="tab" :class="{active: props.current.value===t.key}" @click="emit('change', t.key)">
+    <button class="tab" :class="{active: props.current.value===t.key}" @click="changeTab(t)">
       <span class="tab-label">{{ t.label }}</span>
-      <span v-if="t.badge" class="tab-badge">{{ t.badge() }}</span>
+      <span  v-if="t.badge" class="tab-badge">{{ t.badge() }}</span>
     </button>
   </template>
 </template>
+
+<style>
+.tab-badge {
+  font-size: 0.8em;
+  padding: 0.2em 0.4em;
+  background-color: #0c98f5;
+  color: #fff;
+}
+</style>
