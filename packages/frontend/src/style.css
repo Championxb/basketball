@@ -111,15 +111,27 @@ body.dark {
 /* Tabs */
 .tabs {
   display: flex;
-  gap: 8px;
+  gap: 20px;
   padding: 10px 20px;
   border-bottom: 1px solid var(--border);
   overflow-x: auto;
+}
+/* 仅在移动设备上隐藏滚动条 */
+@media (max-width: 500px) {
+  .tabs {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+  }
+
+  .tabs::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+  }
 }
 .tab {
   flex: 0 0 auto;
 }
 .tab {
+  position: relative;
   appearance: none;
   border: 1px solid transparent;
   background: rgba(255, 255, 255, 0.03);
@@ -156,7 +168,7 @@ body.dark {
 /* Container & Grid */
 .container {
   padding: 20px;
-  max-width: 1200px;
+  max-width: 1600px;
   margin: 0 auto;
 }
 .grid {
