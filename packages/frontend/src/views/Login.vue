@@ -37,7 +37,7 @@
           <div style="display:flex;align-items:center;justify-content:space-between;margin-top:14px;gap:12px">
             <label style="display:flex;align-items:center;gap:8px; font-size:13px" class="muted">
               <input type="checkbox" v-model="remember" />
-              <span >记住我</span>
+              <span>记住我</span>
             </label>
 
             <div style="display:flex;gap:8px">
