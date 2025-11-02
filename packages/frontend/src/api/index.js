@@ -72,6 +72,11 @@ export function post(url, data = {}, options = {}) {
     return apiClient.post(url, data, options);
 }
 
+// 添加登录接口的便捷方法（如果需要）
+export function login(data = {}) {
+    return post('/api/login', data);
+}
+
 /**
  * PUT请求
  * @param {string} url - 请求地址
@@ -104,6 +109,9 @@ export const API = {
 
     // 产品接口
     getProducts: () => get('/api/products'),
+
+    // Auth
+    login: (payload) => post('/api/login', payload),
 
     // 可以添加更多API接口...
 };
