@@ -22,16 +22,16 @@ const tabs = [
     label: "报警",
     badge: () => props.store.state.alerts.history.length,
   },
-  {
-    key: "energy",
-    label: "能耗",
-    badge: () => props.store.state.energy.powerKW || 0,
-  },
-  {
-    key: "environment",
-    label: "环境",
-    badge: () => props.store.state.env.aqi || "--",
-  },
+  // {
+  //   key: "energy",
+  //   label: "能耗",
+  //   badge: () => props.store.state.energy.powerKW || 0,
+  // },
+  // {
+  //   key: "environment",
+  //   label: "环境",
+  //   badge: () => props.store.state.env.aqi || "--",
+  // },
   {
     key: "visitors",
     label: "访客",

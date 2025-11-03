@@ -15,16 +15,16 @@ onMounted(() => {
     },
     options: { responsive: true, scales: { y: { min: 0, max: 100 } } },
   });
-  utilChart = new Chart(utilCanvas.value, {
-    type: "bar",
-    data: {
-      labels: ["A", "B", "C", "D"],
-      datasets: [
-        { label: "利用率(%)", data: [0, 0, 0, 0], backgroundColor: "#7b61ff" },
-      ],
-    },
-    options: { responsive: true, scales: { y: { min: 0, max: 100 } } },
-  });
+  // utilChart = new Chart(utilCanvas.value, {
+  //   type: "bar",
+  //   data: {
+  //     labels: ["A", "B", "C", "D"],
+  //     datasets: [
+  //       { label: "利用率(%)", data: [0, 0, 0, 0], backgroundColor: "#7b61ff" },
+  //     ],
+  //   },
+  //   options: { responsive: true, scales: { y: { min: 0, max: 100 } } },
+  // });
 });
 
 watch(
@@ -39,12 +39,12 @@ watch(
 );
 
 watch(
-  () => props.store.state.charts.utilRates,
-  (rates) => {
-    if (!utilChart) return;
-    utilChart.data.datasets[0].data = rates;
-    utilChart.update();
-  }
+  // () => props.store.state.charts.utilRates,
+  // (rates) => {
+  //   if (!utilChart) return;
+  //   utilChart.data.datasets[0].data = rates;
+  //   utilChart.update();
+  // }
 );
 </script>
 
@@ -53,7 +53,7 @@ watch(
     <div class="grid">
       <div class="card span-2">
         <div class="card-header">
-          <h2>实时状态</h2>
+          <h2 class="neon">实时状态</h2>
           <span class="muted">{{ props.store.state.app.nowTime }}</span>
         </div>
         <div class="stats">
@@ -84,19 +84,16 @@ watch(
         </div>
       </div>
 
-      <div class="card">
-        <div class="card-header"><h2>占用趋势</h2></div>
-        <canvas ref="occCanvas" aria-label="占用趋势图" role="img"></canvas>
-      </div>
 
-      <div class="card">
+
+      <!-- <div class="card">
         <div class="card-header"><h2>场地利用率</h2></div>
         <canvas ref="utilCanvas" aria-label="利用率柱状图" role="img"></canvas>
-      </div>
+      </div> -->
 
       <div class="card span-2">
-        <div class="card-header">
-          <h2>实时画面</h2>
+        <div class="card-header ">
+          <h2 class="neon">实时画面</h2>
           <div class="feeds-actions">
             <button class="btn ghost" @click="props.store.refreshFeeds">
               刷新画面
@@ -125,9 +122,10 @@ watch(
             />
             <figcaption>入口通道</figcaption>
           </figure>
+          <!-- https://images.unsplash.com/photo-1518020382113-a7e8fc38eac9?q=80&w=1080&auto=format&fit=crop -->
           <figure class="feed">
             <img
-              src="https://images.unsplash.com/photo-1518020382113-a7e8fc38eac9?q=80&w=1080&auto=format&fit=crop"
+              src="https://images.unsplash.com/photo-1483721310020-03333e577078?q=80&w=1080&auto=format&fit=crop"
               alt="看台摄像头"
             />
             <figcaption>看台</figcaption>
@@ -136,7 +134,9 @@ watch(
       </div>
 
       <div class="card span-2">
-        <div class="card-header"><h2>场地详情</h2></div>
+        <div class="card-header">
+          <h2 class="neon">场地详情</h2>
+        </div>
         <div class="courts">
           <div
             class="court"
@@ -190,8 +190,17 @@ watch(
         </div>
       </div>
 
+      <div class="card ">
+        <div class="card-header">
+          <h2 class="neon">占用趋势</h2>
+        </div>
+        <canvas ref="occCanvas" aria-label="占用趋势图" role="img"></canvas>
+      </div>
+
       <div class="card">
-        <div class="card-header"><h2>报警</h2></div>
+        <div class="card-header">
+          <h2 class="neon">报警</h2>
+        </div>
         <ul class="list" id="alertList">
           <li v-for="a in props.store.state.alerts.live" :key="a.id">
             <span>{{ a.msg }}</span>
