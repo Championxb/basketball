@@ -40,21 +40,63 @@ body {
 }
 
 body.dark {
-  --bg: #0c1524;
-  --text: #f0f4ff;
-  --muted: #aac0d6;
-  --border: rgba(220, 230, 255, 0.12);
-  background: radial-gradient(
-      1200px 600px at 10% 10%,
-      rgba(54, 209, 255, 0.06),
-      transparent
-    ),
-    radial-gradient(
-      900px 400px at 90% 90%,
-      rgba(123, 97, 255, 0.08),
-      transparent
-    ),
-    #0b1220;
+  /* 更科幻的暗黑配色：深邃背景 + 霓虹青/紫 高光 */
+  --bg: #061224;
+  --text: #eaf6ff;
+  --muted: #8fb6d0;
+  --border: rgba(100, 150, 255, 0.10);
+  --accent: #18e0ff; /* 霓虹青 */
+  --accent-2: #9b5bff; /* 电子紫 */
+
+  /* 层叠发光背景（保留原项目的圆形光斑风格，但更强烈） */
+  background:
+    radial-gradient(500px 240px at 12% 12%, rgba(24,224,255,0.08), transparent),
+    radial-gradient(700px 320px at 88% 82%, rgba(155,91,255,0.06), transparent),
+    linear-gradient(180deg,#020416 0%, #041025 55%, #02101a 100%);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* topbar 在暗色时更通透并带轻微霓虹边 */
+body.dark .topbar {
+  background: rgba(6, 10, 18, 0.48);
+  border-bottom: 1px solid rgba(24,224,255,0.04);
+  box-shadow: 0 6px 20px rgba(24,224,255,0.02);
+}
+
+/* 卡片在暗色模式下使用更暗的玻璃感与轻微内发光 */
+body.dark .card {
+  background: linear-gradient(180deg, rgba(6,10,18,0.6), rgba(2,4,8,0.45));
+  border: 1px solid rgba(24,224,255,0.04);
+  box-shadow: 0 10px 40px rgba(2,6,12,0.6), inset 0 1px 0 rgba(255,255,255,0.02);
+}
+
+/* 品牌文字带霓虹色 */
+body.dark .brand-mark {
+  color: var(--accent);
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 10px 30px rgba(24,224,255,0.06));
+}
+
+/* 可复用霓虹文本类 */
+.neon {
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* 微交互：在暗色时让按钮带轻微发光边 */
+body.dark .btn {
+  border-color: rgba(24,224,255,0.06);
+}
+
+body.dark .tab .active {
+  box-shadow: 0 10px 30px rgba(24,224,255,0.06);
 }
 
 /* Topbar */
@@ -173,12 +215,12 @@ body.dark {
 }
 .grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(1, 1fr);
   gap: 16px;
 }
 @media (min-width: 1024px) {
   .grid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 .span-2 {
