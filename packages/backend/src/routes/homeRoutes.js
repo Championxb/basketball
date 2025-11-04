@@ -1,15 +1,12 @@
 /**
  * 首页路由
  */
-import Router from 'koa-router';
-import homeController from '../controllers/homeController.js';
+import express from 'express';
+import { getHomePage } from '../controllers/homeController.js';
 
-const router = new Router();
+const router = express.Router();
 
 // 首页路由
-router.get('/', homeController.getWelcome);
-
-// Hello路由
-router.get('/hello', homeController.getHello);
+router.get('/', getHomePage);
 
 export default router;

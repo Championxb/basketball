@@ -1,21 +1,17 @@
-/**
- * 路由索引文件
- */
-import homeRoutes from './homeRoutes.js';
-import apiRoutes from './apiRoutes.js';
+import express from "express";
+import homeRoutes from "./homeRoutes.js";
+import apiRoutes from "./apiRoutes.js";
+import authRoutes from "./authRoutes.js";
 
-/**
- * 注册所有路由
- * @param {Object} app - Koa应用实例
- */
-export default (app) => {
-    // 注册首页路由
-    app.use(homeRoutes.routes()).use(homeRoutes.allowedMethods());
+const router = express.Router();
 
-    // 注册API路由
-    app.use(apiRoutes.routes()).use(apiRoutes.allowedMethods());
+// 首页路由
+router.use("/", homeRoutes);
 
-    // 可以在这里注册更多路由...
+// API路由
+router.use("/api", apiRoutes);
 
-    console.log('所有路由已注册');
-};
+// 认证路由
+router.use("/api", authRoutes);
+
+export default router;

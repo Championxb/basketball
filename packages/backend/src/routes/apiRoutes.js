@@ -1,17 +1,9 @@
-/**
- * API路由
- */
-import Router from 'koa-router';
-import apiController from '../controllers/apiController.js';
+import express from 'express';
+import { getApiData } from '../controllers/apiController.js';
 
-const router = new Router({
-    prefix: '/api'
-});
+const router = express.Router();
 
-// 用户信息路由
-router.get('/user', apiController.getUserInfo);
-
-// 产品列表路由
-router.get('/products', apiController.getProducts);
+// API示例路由
+router.get('/', getApiData);
 
 export default router;

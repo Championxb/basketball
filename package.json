@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev:frontend": "pnpm --filter frontend dev",
-    "dev:backend": "pnpm --filter backend dev",
+    "dev:backend": "pnpm --filter backend start",
     "dev": "pnpm -r --parallel dev",
     "build:frontend": "pnpm --filter frontend build",
     "build:backend": "pnpm --filter backend build",
@@ -18,5 +18,8 @@
   "dependencies": {
     "chart.js": "^4.5.1",
     "dayjs": "^1.11.18"
+  },
+  "devDependencies": {
+    "sass": "^1.93.3"
   }
 }
