@@ -12,6 +12,6 @@ router.use("/", homeRoutes);
 router.use("/api", apiRoutes);
 
 // 认证路由
-router.use("/api", authRoutes);
+router.use("/api/auth", authRoutes);
 
 export default router;

@@ -107,7 +107,7 @@
         </form>
 
         <div style="margin-top: 20px" class="muted">
-          还没有账号？联系<a style="color: aqua">管理员</a>创建。
+          还没有账号？联系<a style="color: #1aa8e4">管理员</a>创建。
         </div>
       </div>
     </div>
@@ -151,7 +151,6 @@ async function onSubmit() {
       username: username.value,
       password: password.value,
     });
-    console.log("登录响应:", res);
     const data = res && res.token ? res : res && res.data ? res.data : res;
     if (data && data.token) {
       // 存储 token（如果记住我，则长期存储）Todo bug
@@ -211,6 +210,26 @@ async function onSubmit() {
 }
 .brand-name {
   font-weight: 700;
+}
+input {
+  width: 280px;
+  height: 42px;
+  border: 1px solid #1b3c5a;
+  border-radius: 6px;
+  background-color: #0a1a25;
+  font-size: 16px;
+  padding: 8px 14px;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 6px rgba(0, 255, 255, 0.2);
+}
+
+/* 聚焦时效果 */
+input:focus {
+  outline: none;
+  border-color: #176b6b;
+  box-shadow: 0 0 16px rgba(32, 86, 131, 0.8);
+  transform: scale(1.002); /* 轻微放大 */
+  background-color: #0d2230;
 }
 
 .login-form input:not([type="checkbox"]) {
