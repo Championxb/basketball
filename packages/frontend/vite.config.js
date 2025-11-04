@@ -6,6 +6,12 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": "/src",
+      "@api": "/src/api",
+      "@assets": "/src/assets",      
+      "@views": "/src/views",
+      "@styles": "/src/styles",
+      "@components": "/src/components",
+      "@utils": "/src/utils",
     },
   },
   plugins: [vue()],
@@ -17,9 +23,9 @@ export default defineConfig({
   },
   css: {
     preprocessorOptions: {
-      // scss: {
-      //   additionalData: `@import "@/styles/variables.scss";`
-      // }
-    }
-  }
+      scss: {
+        additionalData: `@import "/src/style/util.scss";`,
+      },
+    },
+  },
 });
