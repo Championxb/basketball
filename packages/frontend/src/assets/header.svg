@@ -1,0 +1,93 @@
+<svg
+  version="1.1"
+  id="layer1"
+  xmlns="http://www.w3.org/2000/svg"
+  xmlns:xlink="http://www.w3.org/1999/xlink"
+  x="0px"
+  y="0px"
+  viewBox="0 0 1920 80"
+  xml:space="preserve"
+>
+  <linearGradient
+    id="line_00000023994454057530153110000010704537899013655470_"
+    gradientUnits="userSpaceOnUse"
+    x1="0"
+    y1="51.5948"
+    x2="1920"
+    y2="51.5948"
+  >
+    <stop offset="0" style="stop-color: #00ffff; stop-opacity: 0.3" />
+    <stop offset="0.5" style="stop-color: #00ffff" />
+    <stop offset="1" style="stop-color: #359bbb; stop-opacity: 0.3" />
+  </linearGradient>
+  
+  <path
+    id="line"
+    style="
+      fill: none;
+      stroke: url(#line_00000023994454057530153110000010704537899013655470_);
+      stroke-width: 3;
+      stroke-miterlimit: 10;
+    "
+    d="
+    M0,15
+    c0, 0, 0, 0, 540, 3
+    c30, 0, 25, 37, 60, 37  
+    c20, 0, 0, 0, 720, 0
+    c35, 0, 30, -37, 60, -37 
+    c0, 0, 0, 0, 1070, -3"
+  />
+  
+  <radialGradient
+    id="shine_00000119839261443333368870000010198375436372533932_"
+    cx="0.5"
+    cy="0.5"
+    r="1"
+    gradientUnits="objectBoundingBox"
+  >
+    <stop offset="0" style="stop-color: #359bbb" />
+    <stop offset="0.05" style="stop-color: #fbffff; stop-opacity: 0.9941" />
+    <stop offset="0.114" style="stop-color: #359bbb; stop-opacity: 0.6" />
+    <stop offset="0.2154" style="stop-color: #359bbb; stop-opacity: 0.4" />
+    <stop offset="0.3069" style="stop-color: #359bbb; stop-opacity: 0.3" />
+    <stop offset="0.3869" style="stop-color: #359bbb; stop-opacity: 0.1" />
+    <stop offset="0.4523" style="stop-color: #359bbb; stop-opacity: 0.05" />
+    <stop offset="0.4948" style="stop-color: #359bbb; stop-opacity: 0.02" />
+  </radialGradient>
+  
+  <ellipse
+    id="shine"
+    style="
+      fill: url(#shine_00000119839261443333368870000010198375436372533932_);
+    "
+    cx="960"
+    cy="55"
+    rx="138"
+    ry="10.2"
+  />
+  
+  <style type="text/css">
+    .st4 {
+      fill: none;
+      stroke: url(#line_00000173870052438409208090000011397048173736242048_);
+      stroke-width: 3;
+      stroke-miterlimit: 10;
+    }
+
+    .st5 {
+      fill: url(#shine_00000036966883190852774830000011257340917761686440_);
+    }
+
+    .st6 {
+      fill: #00ffff;
+    }
+
+    .st7 {
+      font-family: "MicrosoftYaHei-Bold";
+    }
+
+    .st9 {
+      letter-spacing: 1;
+    }
+  </style>
+</svg>
