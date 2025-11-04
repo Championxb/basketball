@@ -1,0 +1,15 @@
+@use 'sass:math';
+$design-width: 1920px;
+$design-height: 1080px;
+
+@function vw($value) {
+  @return math.div($value, $design-width) * 100vw;
+}
+
+@function vh($value) {
+  @return math.div($value, $design-height) * 100vh;
+}
+
+@function font($value) {
+  @return math.div($value, $design-width) * 100vw;
+}
