@@ -7,7 +7,7 @@ export default defineConfig({
     alias: {
       "@": "/src",
       "@api": "/src/api",
-      "@assets": "/src/assets",      
+      "@assets": "/src/assets",
       "@views": "/src/views",
       "@styles": "/src/styles",
       "@components": "/src/components",
@@ -24,7 +24,8 @@ export default defineConfig({
   css: {
     preprocessorOptions: {
       scss: {
-        additionalData: `@import "/src/style/util.scss";`,
+        // 使用 @use 替代已弃用的 @import；使用 `as *` 保持原有全局变量/混入可用性
+        additionalData: `@use "/src/style/util" as *;`,
       },
     },
   },

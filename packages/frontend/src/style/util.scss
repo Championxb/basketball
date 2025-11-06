@@ -1,6 +1,6 @@
 @use 'sass:math';
-$design-width: 1920px;
-$design-height: 1080px;
+$design-width: 1920;
+$design-height: 1080;
 
 @function vw($value) {
   @return math.div($value, $design-width) * 100vw;
