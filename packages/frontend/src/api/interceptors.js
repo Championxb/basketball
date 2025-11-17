@@ -1,10 +1,7 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:3000';
-
-// 创建axios实例
+// 创建axios实例 - 移除baseURL，使用相对路径通过Vite代理
 const apiClient = axios.create({
-    baseURL: API_BASE_URL,
     headers: {
         'Content-Type': 'application/json',
     },
@@ -16,6 +13,7 @@ apiClient.interceptors.request.use(
     (config) => {
         // 在发送请求之前做些什么
         // 例如：添加token
+        // 使用相对路径，让Vite代理处理请求转发
         if (localStorage.getItem('token')) {
             config.headers.Authorization = `Bearer ${localStorage.getItem('token')}`;
         }

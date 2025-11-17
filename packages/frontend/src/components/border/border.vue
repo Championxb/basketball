@@ -58,6 +58,111 @@ const props = defineProps({
 const show = ref(false);
 const inner = ref(null);
 const bgRef = ref(null);
+
+// 定义暴露给父组件的方法
+const slideOutRight = (callback) => {
+  if (inner.value) {
+    gsap.to(inner.value, {
+      x: "-100%",
+      opacity: 0,
+      duration: 0.5,
+      ease: "power2.inOut",
+      onComplete: () => {
+        if (callback) callback();
+      }
+    });
+  }
+};
+
+const slideInLeft = (callback) => {
+  if (inner.value) {
+    gsap.fromTo(inner.value,
+      { x: "100%", opacity: 0 },
+      {
+        x: "0%",
+        opacity: 1,
+        duration: 0.5,
+        ease: "power2.inOut",
+        onComplete: () => {
+          if (callback) callback();
+        }
+      }
+    );
+  }
+};
+
+const slideOutLeft = (callback) => {
+  if (inner.value) {
+    gsap.to(inner.value, {
+      x: "100%",
+      opacity: 0,
+      duration: 0.5,
+      ease: "power2.inOut",
+      onComplete: () => {
+        if (callback) callback();
+      }
+    });
+  }
+};
+
+const slideInRight = (callback) => {
+  if (inner.value) {
+    gsap.fromTo(inner.value,
+      { x: "-100%", opacity: 0 },
+      {
+        x: "0%",
+        opacity: 1,
+        duration: 0.5,
+        ease: "power2.inOut",
+        onComplete: () => {
+          if (callback) callback();
+        }
+      }
+    );
+  }
+};
+
+const slideOutTop = (callback) => {
+  if (inner.value) {
+    gsap.to(inner.value, {
+      y: "-100%",
+      opacity: 0,
+      duration: 0.5,
+      ease: "power2.inOut",
+      onComplete: () => {
+        if (callback) callback();
+      }
+    });
+  }
+};
+
+const slideInBottom = (callback) => {
+  if (inner.value) {
+    gsap.fromTo(inner.value,
+      { y: "100%", opacity: 0 },
+      {
+        y: "0%",
+        opacity: 1,
+        duration: 0.5,
+        ease: "power2.inOut",
+        onComplete: () => {
+          if (callback) callback();
+        }
+      }
+    );
+  }
+};
+
+// 暴露方法给父组件
+defineExpose({
+  slideOutRight,
+  slideInLeft,
+  slideOutLeft,
+  slideInRight,
+  slideOutTop,
+  slideInBottom
+});
+
 onMounted(() => {
   gsap.to(bgRef.value, {
     height: "100%",
@@ -111,6 +216,7 @@ onMounted(() => {
     opacity: 0;
     background: url("./assets/itembg.png") no-repeat;
     background-size: 100% 100%;
+    overflow: hidden; /* 确保动画时内容不会溢出 */
 
     &.big-bg {
       background: url("./assets/itembgBig.png") no-repeat;

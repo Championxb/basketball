@@ -46,7 +46,8 @@ import img4 from "./assets/4.jpg";
 import pop from "./pop/pop.vue";
 import videoMp4 from "./assets/video.mp4";
 
-const images = [img1, img2, img3, img4, img1, img2, img3, img4];
+// const images = [img1, img2, img3, img4, img1, img2, img3, img4];
+const images = [img1];
 
 const popRef = ref(null);
 const videoPlayer = ref(null);
@@ -55,13 +56,13 @@ const popTitle = ref("");
 // 设备状态数据
 const deviceStatus = ref([
   { status: "normal", name: "监控点1", time: "" },
-  { status: "fault", name: "监控点2", time: "" },
-  { status: "offline", name: "监控点3", time: "" },
-  { status: "normal", name: "监控点4", time: "" },
-  { status: "normal", name: "监控点5", time: "" },
-  { status: "fault", name: "监控点6", time: "" },
-  { status: "offline", name: "监控点7", time: "" },
-  { status: "normal", name: "监控点8", time: "" },
+  // { status: "fault", name: "监控点2", time: "" },
+  // { status: "offline", name: "监控点3", time: "" },
+  // { status: "normal", name: "监控点4", time: "" },
+  // { status: "normal", name: "监控点5", time: "" },
+  // { status: "fault", name: "监控点6", time: "" },
+  // { status: "offline", name: "监控点7", time: "" },
+  // { status: "normal", name: "监控点8", time: "" },
 ]);
 
 // 设备信息

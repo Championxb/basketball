@@ -14,10 +14,10 @@ const props = defineProps({
     items: {
         type: Array,
         default: () => [
-            { name: "场馆a", checked: true },
-            { name: "场馆b", checked: false },
-            { name: "场馆c", checked: false },
-            { name: "场馆d", checked: false },
+            { name: "场地a", key: 0, checked: true },
+            { name: "场地b", key: 1, checked: false },
+            { name: "场地c", key: 2, checked: false },
+            { name: "场地d", key: 3, checked: false },
         ],
     },
 });

@@ -17,6 +17,7 @@ import { userAPI } from './user.js';
 import { productAPI } from './product.js';
 import { homeAPI } from './home.js';
 import { login, verifyToken } from './auth.js';
+import { iceTwoDimPush, iceTwoDimClose, icePush, iceClose } from './ice.js';
 
 const API = {
     // 首页接口
@@ -32,8 +33,12 @@ const API = {
     // 认证接口
     login,
     verifyToken,
-    
-    // 可以添加更多API接口...
+
+    //推流
+    iceTwoDimPush,
+    iceTwoDimClose,
+    icePush,
+    iceClose,
 };
 
 export default API;

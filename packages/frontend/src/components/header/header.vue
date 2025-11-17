@@ -252,8 +252,8 @@ onUnmounted(() => {
     align-content: flex-start;
 
     span {
-      font-size: 40px;
-      font-family: DingTalkJinBuTi;
+      font-size: 45px;
+      font-family: 'MyFont';
       font-weight: 400;
       color: #ffffff;
       text-shadow: 0 0 18px #02b8fa;

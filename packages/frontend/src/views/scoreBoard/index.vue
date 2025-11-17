@@ -167,7 +167,7 @@ const { sortBy } = toRefs(state);
         // background: #db0707;
         .list {
             padding: 0;
-            height: calc(100% - 48px);
+            height: calc(100% - 95px);
             overflow: hidden;
         }
         .row {
@@ -182,6 +182,7 @@ const { sortBy } = toRefs(state);
             font-weight: 600;
             color: #bfe4ff;
             background: linear-gradient(90deg, rgba(255, 255, 255, 0.02), transparent);
+
         }
 
         .cell {
@@ -204,7 +205,7 @@ const { sortBy } = toRefs(state);
         }
 
         .cell.pct {
-            width: 220px;
+            width: 100px;
             display: flex;
             align-items: center;
             gap: 8px;
