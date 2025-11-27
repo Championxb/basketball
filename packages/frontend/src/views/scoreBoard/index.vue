@@ -29,7 +29,7 @@
             </div>
             <!-- <vue-seamless-scroll class="list" :data="sortedPlayers" direction="top" :steep="0.3" roller :distance="10"> -->
             <div class="list">
-                <div class="row" v-for="(p, idx) in sortedPlayers" :key="p.id ?? idx"
+                <div class="row content" v-for="(p, idx) in sortedPlayers" :key="p.id ?? idx"
                     :class="{ highlight: p.points === topScore }">
                     <div class="cell num">{{ p.number ?? idx + 1 }}</div>
                     <div class="cell name">{{ p.name }}</div>
@@ -68,9 +68,9 @@ const props = defineProps({
 const samplePlayers = [
     { id: 1, number: 7, name: '张三', points: 24, rebounds: 8, assists: 5 },
     { id: 2, number: 9, name: '李四', points: 17, rebounds: 6, assists: 7 },
-    // { id: 3, number: 11, name: '王五', points: 30, rebounds: 10, assists: 4 },
-    // { id: 4, number: 15, name: '赵六', points: 12, rebounds: 3, assists: 2 },
-    // { id: 5, number: 23, name: '钱七', points: 8, rebounds: 2, assists: 1 },
+    { id: 3, number: 11, name: '王五', points: 30, rebounds: 10, assists: 4 },
+    { id: 4, number: 15, name: '赵六', points: 12, rebounds: 3, assists: 2 },
+    { id: 5, number: 23, name: '钱七', points: 8, rebounds: 2, assists: 1 },
 ];
 
 const state = reactive({
@@ -109,7 +109,7 @@ const { sortBy } = toRefs(state);
 
 <style lang="scss" scoped>
 .score-board {
-    height: calc(100% - 5px);
+    // height: calc(100% - 5px);
     max-width: calc(100% - 20px);
     margin: 0 auto;
     background: linear-gradient(180deg, rgba(2, 18, 34, 0.6), rgba(6, 30, 50, 0.35));
@@ -167,11 +167,11 @@ const { sortBy } = toRefs(state);
         height: 100%;
         padding: 0px 10px;
         font-size: 16px;
+        margin-bottom: 10px;
 
-        // background: #db0707;
-        .list {   
+        .list {
             padding: 0;
-            height: calc(100% - 95px);
+            // height: calc(100% - 95px);
             overflow: hidden;
         }
 
@@ -181,15 +181,22 @@ const { sortBy } = toRefs(state);
             padding: 5px 8px;
             border-radius: 6px;
             margin-bottom: 8px;
-            height: 20px;
-            background: rgb(219, 17, 17);
         }
 
         .row.head {
             font-weight: 600;
             color: #bfe4ff;
             background: linear-gradient(90deg, rgba(255, 255, 255, 0.02), transparent);
+        }
 
+        .row.content {
+            height: 20px;
+            margin-bottom: 0px;
+        }
+
+        .row.content.highlight {
+            background: linear-gradient(90deg, rgba(0, 120, 255, 0.08), rgba(0, 180, 255, 0.03));
+            box-shadow: 0 6px 18px rgba(0, 120, 255, 0.06);
         }
 
         .cell {
@@ -237,11 +244,6 @@ const { sortBy } = toRefs(state);
             text-align: right;
             // font-size: 12px;
             color: #cfeeff
-        }
-
-        .row.highlight {
-            background: linear-gradient(90deg, rgba(0, 120, 255, 0.08), rgba(0, 180, 255, 0.03));
-            box-shadow: 0 6px 18px rgba(0, 120, 255, 0.06)
         }
 
         .sb-footer {

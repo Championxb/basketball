@@ -224,7 +224,7 @@ onMounted(() => {
 
         .wrapper_scoreBoard {
             // margin-right: 20px;
-            height: calc(23%);
+            // height: calc(23%);
             width: calc(28%);
             position: absolute;
             left: calc(50% - 15%);
