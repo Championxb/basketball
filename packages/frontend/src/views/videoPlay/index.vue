@@ -8,7 +8,7 @@
     </div>
 </template>
 <script setup>
-import { ref, onMounted, onUnmounted } from "vue";
+import { ref, onMounted, onUnmounted, inject } from "vue";
 import { SimplePlayer } from 'xgplayer';
 import 'xgplayer/dist/index.min.css';
 import Start from 'xgplayer/es/plugins/start'
@@ -20,7 +20,11 @@ import Play from 'xgplayer/es/plugins/play'
 import Error from 'xgplayer/es/plugins/error'
 import Fullscreen from 'xgplayer/es/plugins/fullscreen'
 import FlvPlugin from "xgplayer-flv";
+
+// 注入播放器状态管理
+const { isPlaying, updatePlayState } = inject('playerState') || { isPlaying: ref(true), updatePlayState: () => {} };
 import API from '@api'
+import { watch } from 'vue'
 
 const videoPlayer = ref(null);
 const stream = ref('')
@@ -74,12 +78,38 @@ const initPlayer = (url) => {
             maxLatency: 10, // 直播允许的最大延迟，默认 10 秒
             disconnectTime: 0, // 直播断流时间，默认 0 秒，（独立使用时等于 maxLatency）
         },
+        inactive:500,
+        // leavePlayerTime:500,
     })
+    
+    // 添加播放状态监听
+    videoPlayer.value.on('play', () => {
+        updatePlayState(true);
+    });
+    
+    videoPlayer.value.on('pause', () => {
+        updatePlayState(false);
+    });
 }
 
 onMounted(() => {
     getStream()
 });
+// 监听全局播放状态变化
+watch(() => isPlaying.value, (newState) => {
+    if (videoPlayer.value) {
+        // 避免重复触发事件导致循环更新
+        const currentState = !videoPlayer.value.paused;
+        if (currentState !== newState) {
+            if (newState) {
+                videoPlayer.value.play();
+            } else {
+                videoPlayer.value.pause();
+            }
+        }
+    }
+});
+
 onUnmounted(() => {
     if (videoPlayer.value) {
         videoPlayer.value.destroy();
@@ -98,8 +128,10 @@ onUnmounted(() => {
 }
 
 #xgplayer-container {
-    width: calc(100% - 20px);
-    height: calc(100% - 20px);
+    /* width: calc(100% - 20px);
+    height: calc(100% - 20px); */
+    width: 100%;
+    height: 100%;
     min-width: 600px;
     min-height: 400px;
     background: transparent;

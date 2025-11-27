@@ -51,6 +51,7 @@ function onToggle(index) {
     display: flex;
     gap: 10px;
     align-items: center;
+    z-index: 2;
 
     /* 背景容器可选，删除背景以便按钮自己的背景可见 */
     /* background: #ec0b0b; */

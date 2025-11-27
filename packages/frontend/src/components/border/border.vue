@@ -214,12 +214,12 @@ onMounted(() => {
     z-index: 1;
     align-content: flex-start;
     opacity: 0;
-    background: url("./assets/itembg.png") no-repeat;
+    // background: url("./assets/itembg.png") no-repeat;
     background-size: 100% 100%;
     overflow: hidden; /* 确保动画时内容不会溢出 */
 
     &.big-bg {
-      background: url("./assets/itembgBig.png") no-repeat;
+      // background: url("./assets/itembgBig.png") no-repeat;
       background-size: 100% 100%;
     }
 
@@ -236,7 +236,8 @@ onMounted(() => {
       position: relative;
       width: 100%;
       height: calc(100% - 45px);
-      margin-top: 5px;
+      // margin-top: 5px;
+      padding: 0 5px 5px 5px;
       z-index: 10;
     }
   }
@@ -254,3 +255,4 @@ onMounted(() => {
   }
 }
 </style>
+

@@ -1,5 +1,5 @@
 <template>
-  <div class="pageTop">
+  <div class="pageTop" :class="{ 'hidden': !isVisible }" @mouseenter="showHeader" @mouseleave="startHideTimer">
     <sequence2></sequence2>
     <div class="left"></div>
     <div class="title">
@@ -24,8 +24,10 @@ const props = defineProps({
 });
 
 const currentDateTime = ref("");
+const isVisible = ref(true); // 控制header是否可见
 let timer = null;
 let weatherTimer = null;
+let hideTimer = null; // 用于控制自动隐藏的定时器
 
 // 更新时间显示
 const updateDateTime = () => {
@@ -56,6 +58,7 @@ const startTimer = () => {
   updateDateTime();
   timer = setInterval(updateDateTime, 1000);
 };
+
 // 清除定时器
 const clearTimers = () => {
   if (timer) {
@@ -66,13 +69,58 @@ const clearTimers = () => {
     clearInterval(weatherTimer);
     weatherTimer = null;
   }
+  if (hideTimer) {
+    clearTimeout(hideTimer);
+    hideTimer = null;
+  }
+};
+
+// 开始计时隐藏header
+const startHideTimer = () => {
+  // 清除之前的定时器
+  if (hideTimer) {
+    clearTimeout(hideTimer);
+  }
+
+  // 设置10秒后隐藏
+  hideTimer = setTimeout(() => {
+    isVisible.value = false;
+  }, 5000);
+};
+
+// 显示header并重置定时器
+const showHeader = () => {
+  isVisible.value = true;
+  startHideTimer();
+};
+
+// 隐藏header
+const hideHeader = () => {
+  // 只有当鼠标不在header上时才隐藏
+  if (!document.querySelector('.pageTop:hover')) {
+    isVisible.value = false;
+  }
 };
 
 onMounted(() => {
   startTimer();
+  // 初始化时启动隐藏定时器
+  startHideTimer();
+
+  // 添加鼠标移动到屏幕顶部的监听
+  const handleMouseMove = (e) => {
+    // 当鼠标移动到屏幕顶部20px范围内且header当前不可见时，显示header
+    if (e.clientY <= 20 && !isVisible.value) {
+      showHeader();
+    }
+  };
+
+  document.addEventListener('mousemove', handleMouseMove);
 });
 
+// 在组件卸载时移除事件监听
 onUnmounted(() => {
+  document.removeEventListener('mousemove', handleMouseMove);
   clearTimers();
 });
 </script>
@@ -82,7 +130,8 @@ onUnmounted(() => {
   width: 100%;
   background: url("@assets/header/topbg.png") center top no-repeat;
   background-size: 100% 100%;
-  height: 300px;
+  height: 100px;
+
   flex-shrink: 0;
   display: flex;
   top: 0;
@@ -92,22 +141,54 @@ onUnmounted(() => {
   flex-direction: row;
   align-content: flex-start;
   position: fixed;
-  z-index: 12;
-  pointer-events: none;
+  z-index: 4;
+  pointer-events: initial;
+  transition: transform 0.5s ease-in-out;
+  transform: translateY(0);
+}
 
-  .left {
+.pageTop.hidden {
+  transform: translateY(-100%);
+}
+
+.left {
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  flex-wrap: nowrap;
+  flex-direction: column;
+  height: auto;
+  position: absolute;
+  left: 20px;
+  top: 5px;
+
+  .weather-info {
+    pointer-events: initial;
     display: flex;
     justify-content: flex-start;
-    align-items: flex-start;
+    align-items: center;
     flex-wrap: nowrap;
-    flex-direction: column;
-    height: auto;
-    position: absolute;
-    left: 20px;
-    top: 5px;
+    flex-direction: row;
+    align-content: flex-start;
 
-    .weather-info {
-      pointer-events: initial;
+    .weather-main {
+      display: flex;
+      align-items: center;
+
+      .temperature {
+        font-size: 14px;
+        color: #ffffff;
+        margin-right: 12px;
+        font-family: "DingTalkJinBuTi";
+      }
+
+      .weather-desc {
+        font-size: 14px;
+        color: #ffffff;
+      }
+    }
+
+    .weather-details {
       display: flex;
       justify-content: flex-start;
       align-items: center;
@@ -115,153 +196,128 @@ onUnmounted(() => {
       flex-direction: row;
       align-content: flex-start;
 
-      .weather-main {
+      .detail-item {
         display: flex;
-        align-items: center;
+        justify-content: space-between;
+        margin-left: 10px;
+        font-size: 14px;
 
-        .temperature {
-          font-size: 14px;
+        .label {
+          color: rgba(255, 255, 255, 0.8);
+          font-family: "DingTalkJinBuTi";
+          margin-right: 5px;
+        }
+
+        .value {
           color: #ffffff;
-          margin-right: 12px;
+          font-weight: 500;
           font-family: "DingTalkJinBuTi";
         }
-
-        .weather-desc {
-          font-size: 14px;
-          color: #ffffff;
-        }
       }
-
-      .weather-details {
-        display: flex;
-        justify-content: flex-start;
-        align-items: center;
-        flex-wrap: nowrap;
-        flex-direction: row;
-        align-content: flex-start;
-
-        .detail-item {
-          display: flex;
-          justify-content: space-between;
-          margin-left: 10px;
-          font-size: 14px;
-
-          .label {
-            color: rgba(255, 255, 255, 0.8);
-            font-family: "DingTalkJinBuTi";
-            margin-right: 5px;
-          }
-
-          .value {
-            color: #ffffff;
-            font-weight: 500;
-            font-family: "DingTalkJinBuTi";
-          }
-        }
-      }
-    }
-
-    .weather-loading {
-      color: rgba(255, 255, 255, 0.6);
-      font-size: 12px;
-      padding: 10px;
-      pointer-events: initial;
-    }
-
-    img {
-      width: 17px;
-      height: 17px;
-      margin-left: -3px;
-      margin-right: -3px;
-      transition: opacity 0.3s ease;
-    }
-
-    .leftDot {
-      margin-left: 10px;
-      margin-top: 5px;
-      z-index: 10;
-      position: absolute;
-    }
-
-    .liziqiuMain {
-      position: absolute;
-      left: 60%;
-      top: 5px;
     }
   }
 
-  .right {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    flex-wrap: nowrap;
-    flex-direction: row;
-    align-content: flex-start;
-    width: 300px;
-    height: 24px;
+  .weather-loading {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 12px;
+    padding: 10px;
+    pointer-events: initial;
+  }
+
+  img {
+    width: 17px;
+    height: 17px;
+    margin-left: -3px;
+    margin-right: -3px;
+    transition: opacity 0.3s ease;
+  }
+
+  .leftDot {
+    margin-left: 10px;
+    margin-top: 5px;
+    z-index: 10;
     position: absolute;
-    right: 0;
-    top: 0px;
-
-    .datetime {
-      font-size: 16px;
-      font-family: DIN, Arial, sans-serif;
-      font-weight: 400;
-      color: #ffffff;
-      text-shadow: 0 0 8px #02d5fa;
-      margin-right: 20px;
-      margin-top: 70px;
-      pointer-events: initial;
-      white-space: nowrap;
-      letter-spacing: 1px;
-    }
-
-    img {
-      width: 17px;
-      height: 17px;
-      margin-left: -3px;
-      margin-right: -3px;
-      transition: opacity 0.3s ease;
-    }
-
-    .liziqiuMain {
-      position: absolute;
-      right: 60%;
-      top: 5px;
-    }
-
-    .rightDot {
-      margin-right: 10px;
-      margin-top: 5px;
-      z-index: 10;
-      position: absolute;
-    }
   }
 
-  .title {
-    position: relative;
-    width: 60%;
-    height: 100%;
-    display: flex;
-    flex-shrink: 0;
-    z-index: 111;
-    justify-content: center;
-    align-items: flex-start;
-    flex-wrap: nowrap;
-    flex-direction: row;
-    align-content: flex-start;
-
-    span {
-      font-size: 45px;
-      font-family: 'MyFont';
-      font-weight: 400;
-      color: #ffffff;
-      text-shadow: 0 0 18px #02b8fa;
-      margin-top: 10px;
-      pointer-events: initial;
-    }
+  .liziqiuMain {
+    position: absolute;
+    left: 60%;
+    top: 5px;
   }
 }
+
+.right {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  flex-wrap: nowrap;
+  flex-direction: row;
+  align-content: flex-start;
+  width: 300px;
+  height: 24px;
+  position: absolute;
+  right: 0;
+  top: 0px;
+
+  .datetime {
+    font-size: 16px;
+    font-family: DIN, Arial, sans-serif;
+    font-weight: 400;
+    color: #ffffff;
+    text-shadow: 0 0 8px #02d5fa;
+    margin-right: 20px;
+    margin-top: 70px;
+    pointer-events: initial;
+    white-space: nowrap;
+    letter-spacing: 1px;
+  }
+
+  img {
+    width: 17px;
+    height: 17px;
+    margin-left: -3px;
+    margin-right: -3px;
+    transition: opacity 0.3s ease;
+  }
+
+  .liziqiuMain {
+    position: absolute;
+    right: 60%;
+    top: 5px;
+  }
+
+  .rightDot {
+    margin-right: 10px;
+    margin-top: 5px;
+    z-index: 10;
+    position: absolute;
+  }
+}
+
+.title {
+  position: relative;
+  width: 60%;
+  height: 100%;
+  display: flex;
+  flex-shrink: 0;
+  z-index: 111;
+  justify-content: center;
+  align-items: flex-start;
+  flex-wrap: nowrap;
+  flex-direction: row;
+  align-content: flex-start;
+
+  span {
+    font-size: 45px;
+    font-family: 'MyFont';
+    font-weight: 400;
+    color: #ffffff;
+    text-shadow: 0 0 18px #02b8fa;
+    margin-top: 10px;
+    pointer-events: initial;
+  }
+}
+
 
 .topBg {
   width: 100%;

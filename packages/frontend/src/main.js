@@ -9,12 +9,15 @@ import Particles from "@tsparticles/vue3";
 import { loadSlim } from "@tsparticles/slim";
 import { VueSeamlessScroll } from '@meruem117/vue-seamless-scroll'
 import { createPinia } from 'pinia';
+import draggable from './directives/draggable';
 
 import App from "./App.vue";
 import router from "./router";
 
 const app = createApp(App);
 const pinia = createPinia();
+
+app.directive('draggable', draggable); 
 
 app.use(Particles, {
   init: async (engine) => {

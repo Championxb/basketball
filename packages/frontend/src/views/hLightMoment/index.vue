@@ -48,7 +48,17 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue';
-import videoMp4 from "@assets/video/16535.mp4";
+import video1 from "@assets/video/11月25日.mp4";
+import video2 from "@assets/video/11月25日(1).mp4";
+import video3 from "@assets/video/11月25日(2).mp4";
+import video4 from "@assets/video/11月25日(3).mp4";
+import video5 from "@assets/video/11月25日(4).mp4";
+import thumb1 from "@assets/thumb/thumb1.png";
+import thumb2 from "@assets/thumb/thumb2.png";
+import thumb3 from "@assets/thumb/thumb3.png";
+import thumb4 from "@assets/thumb/thumb4.png";
+import thumb5 from "@assets/thumb/thumb5.png";
+
 const props = defineProps({
     // highlights: [{ id, playerName, time (ISO or seconds), title, description, thumbnail, videoUrl }]
     highlights: {
@@ -66,8 +76,8 @@ const sample = [
         time: '00:02:34',
         title: '张三 关键三分',
         description: '第四节最后两分钟，张三在弧顶命中关键三分。',
-        thumbnail: '',
-        videoUrl: videoMp4,
+        thumbnail: thumb1,
+        videoUrl: video1,
     },
     {
         id: 2,
@@ -75,8 +85,8 @@ const sample = [
         time: '00:10:12',
         title: '李四 空中接力',
         description: '团队配合，空中接力完成暴扣。',
-        thumbnail: '',
-        videoUrl: videoMp4,
+        thumbnail: thumb2,
+        videoUrl: video2,
     },
     {
         id: 3,
@@ -84,8 +94,8 @@ const sample = [
         time: '00:15:45',
         title: '王五 快攻上篮',
         description: '抢断后快速反击，上篮得分。',
-        thumbnail: '',
-        videoUrl: videoMp4,
+        thumbnail:thumb3,
+        videoUrl: video3,
     },
     {
         id: 4,
@@ -93,8 +103,8 @@ const sample = [
         time: '00:20:30',
         title: '赵六 后撤步三分',
         description: '后撤步创造空间，命中三分球。',
-        thumbnail: '',
-        videoUrl: videoMp4,
+        thumbnail: thumb4,
+        videoUrl: video4,
     },
     {
         id: 5,
@@ -102,36 +112,36 @@ const sample = [
         time: '00:25:50',
         title: '孙七 绝平三分',
         description: '比赛最后时刻，孙七命中绝平三分。',
-        thumbnail: '',
-        videoUrl: videoMp4,
+        thumbnail: thumb5,
+        videoUrl: video5,
     },
-    {
-        id: 6,
-        playerName: '周八',
-        time: '00:30:15',
-        title: '周八 关键封盖',
-        description: '防守端关键封盖，阻止对方得分。',
-        thumbnail: '',
-        videoUrl: videoMp4,
-    },
-    {
-        id: 7,
-        playerName: '吴九',
-        time: '00:35:40',
-        title: '吴九 反击暴扣',
-        description: '快攻反击，完成精彩暴扣。',
-        thumbnail: '',
-        videoUrl: videoMp4,
-    },
-    {
-        id: 8,
-        playerName: '郑十',
-        time: '00:40:05',
-        title: '郑十 绝杀上篮',
-        description: '比赛最后一秒，郑十上篮绝杀对手。',
-        thumbnail: '',
-        videoUrl: videoMp4,
-    },
+    // {
+    //     id: 6,
+    //     playerName: '周八',
+    //     time: '00:30:15',
+    //     title: '周八 关键封盖',
+    //     description: '防守端关键封盖，阻止对方得分。',
+    //     thumbnail: '',
+    //     videoUrl: videoMp4,
+    // },
+    // {
+    //     id: 7,
+    //     playerName: '吴九',
+    //     time: '00:35:40',
+    //     title: '吴九 反击暴扣',
+    //     description: '快攻反击，完成精彩暴扣。',
+    //     thumbnail: '',
+    //     videoUrl: videoMp4,
+    // },
+    // {
+    //     id: 8,
+    //     playerName: '郑十',
+    //     time: '00:40:05',
+    //     title: '郑十 绝杀上篮',
+    //     description: '比赛最后一秒，郑十上篮绝杀对手。',
+    //     thumbnail: '',
+    //     videoUrl: videoMp4,
+    // },
 ];
 
 const highlightsList = computed(() => (props.highlights && props.highlights.length ? props.highlights : sample));
@@ -223,7 +233,7 @@ onUnmounted(() => {
     width: 100%;
     height: 100%;
     display: grid;
-    grid-template-columns: repeat(4, minmax(220px, 1fr));
+    grid-template-columns: repeat(1, minmax(220px, 1fr));
     gap: 12px;
     padding: 4px;
 
@@ -235,14 +245,14 @@ onUnmounted(() => {
         display: flex;
         gap: 8px;
         align-items: flex-start;
-
+        
         .thumb {
             height: 100%;
-            flex: 0 0 180px;
+            flex: 0 0 120px;
             cursor: pointer;
 
             .poster {
-                width: 160px;
+                width: 120px;
                 height: 100%;
                 background: rgba(0, 0, 0, 0.5);
                 background-size: cover;
@@ -277,7 +287,7 @@ onUnmounted(() => {
             width: 100%;
             height: 100%;
             gap: 6px;
-            font-size: 18px;
+            font-size: 15px;
 
             .title {
                 font-weight: 600
@@ -325,7 +335,8 @@ onUnmounted(() => {
 }
 
 .modal-body {
-    width: min(1600px, 95%);
+    width: min(1480px, 95%);
+    height: min(600px, 95%);
     background: linear-gradient(180deg, #021029, #04213a);
     border-radius: 8px;
     overflow: hidden

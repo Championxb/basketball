@@ -3,11 +3,11 @@
         <header class="header">
             <!-- <div class="title">球员得分信息</div> -->
             <div class="summary">
-                <div>总得分：<strong>{{ totalPoints }}</strong></div>
-                <div>场上人数：<strong>{{ playersList.length }}</strong></div>
-                <div>最高分：<strong>{{ topScore }}</strong></div>
+                <div>总得分：<strong style="color: #2a9cf3;  font-size: 20px;">{{ totalPoints }}</strong></div>
+                <div>场上人数：<strong style="color: #2a9cf3;  font-size: 20px;">{{ playersList.length }}</strong></div>
+                <div>最高分：<strong style="color: #2a9cf3;  font-size: 20px;">{{ topScore }}</strong></div>
             </div>
-            <div class="controls">
+            <!-- <div class="controls">
                 <label>排序：
                     <select v-model="sortBy">
                         <option value="points">得分</option>
@@ -15,7 +15,7 @@
                         <option value="name">姓名</option>
                     </select>
                 </label>
-            </div>
+            </div> -->
         </header>
 
         <div class="table">
@@ -27,7 +27,8 @@
                 <div class="cell stat">助攻</div>
                 <div class="cell pct">得分占比</div>
             </div>
-            <vue-seamless-scroll class="list" :data="sortedPlayers" direction="top" :steep="0.3" roller :distance="10">
+            <!-- <vue-seamless-scroll class="list" :data="sortedPlayers" direction="top" :steep="0.3" roller :distance="10"> -->
+            <div class="list">
                 <div class="row" v-for="(p, idx) in sortedPlayers" :key="p.id ?? idx"
                     :class="{ highlight: p.points === topScore }">
                     <div class="cell num">{{ p.number ?? idx + 1 }}</div>
@@ -42,7 +43,8 @@
                         <div class="percent-text">{{ percent(p) }}%</div>
                     </div>
                 </div>
-            </vue-seamless-scroll>
+            </div>
+            <!-- </vue-seamless-scroll> -->
         </div>
 
         <!-- <footer class="sb-footer">
@@ -66,9 +68,9 @@ const props = defineProps({
 const samplePlayers = [
     { id: 1, number: 7, name: '张三', points: 24, rebounds: 8, assists: 5 },
     { id: 2, number: 9, name: '李四', points: 17, rebounds: 6, assists: 7 },
-    { id: 3, number: 11, name: '王五', points: 30, rebounds: 10, assists: 4 },
-    { id: 4, number: 15, name: '赵六', points: 12, rebounds: 3, assists: 2 },
-    { id: 5, number: 23, name: '钱七', points: 8, rebounds: 2, assists: 1 },
+    // { id: 3, number: 11, name: '王五', points: 30, rebounds: 10, assists: 4 },
+    // { id: 4, number: 15, name: '赵六', points: 12, rebounds: 3, assists: 2 },
+    // { id: 5, number: 23, name: '钱七', points: 8, rebounds: 2, assists: 1 },
 ];
 
 const state = reactive({
@@ -110,7 +112,7 @@ const { sortBy } = toRefs(state);
     height: calc(100% - 5px);
     max-width: calc(100% - 20px);
     margin: 0 auto;
-    background: linear-gradient(180deg, rgba(2, 18, 34, 0.9), rgba(6, 30, 50, 0.35));
+    background: linear-gradient(180deg, rgba(2, 18, 34, 0.6), rgba(6, 30, 50, 0.35));
     border-radius: 8px;
     color: #eaf6ff;
     box-shadow: 0 6px 30px rgba(0, 0, 0, 0.5);
@@ -133,8 +135,9 @@ const { sortBy } = toRefs(state);
         .summary {
             display: flex;
             gap: 18px;
-            font-size: 16px;
-            color: #9fc6ff
+            font-size: 18px;
+            color: #9fc6ff;
+            padding: 10px 0;
         }
 
         .controls {
@@ -162,20 +165,24 @@ const { sortBy } = toRefs(state);
 
     .table {
         height: 100%;
-        padding: 0px 16px;
+        padding: 0px 10px;
         font-size: 16px;
+
         // background: #db0707;
-        .list {
+        .list {   
             padding: 0;
             height: calc(100% - 95px);
             overflow: hidden;
         }
+
         .row {
             display: flex;
             align-items: center;
             padding: 5px 8px;
             border-radius: 6px;
-            margin-bottom: 8px
+            margin-bottom: 8px;
+            height: 20px;
+            background: rgb(219, 17, 17);
         }
 
         .row.head {
@@ -228,7 +235,7 @@ const { sortBy } = toRefs(state);
         .percent-text {
             width: 40px;
             text-align: right;
-            font-size: 12px;
+            // font-size: 12px;
             color: #cfeeff
         }
 

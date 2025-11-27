@@ -8,7 +8,7 @@
     </div>
 </template>
 <script setup>
-import { ref, onMounted, onUnmounted } from "vue";
+import { ref, onMounted, onUnmounted, inject, watch } from "vue";
 import { SimplePlayer } from 'xgplayer';
 import 'xgplayer/dist/index.min.css';
 import Start from 'xgplayer/es/plugins/start'
@@ -22,6 +22,9 @@ import Fullscreen from 'xgplayer/es/plugins/fullscreen'
 
 import FlvPlugin from "xgplayer-flv";
 import API from '@api'
+
+// 注入播放器状态管理
+const { isPlaying, updatePlayState } = inject('playerState') || { isPlaying: ref(true), updatePlayState: () => {} };
 
 const videoPlayer = ref(null);
 const stream = ref('')
@@ -49,7 +52,7 @@ const closeStream = async () => {
 
 const initPlayer = (url) => {
     // 确保容器存在
-    const container = document.getElementById('xgplayer-container')
+    const container = document.getElementById('xgplayer')
     if (!container) {
         console.error('播放器容器未找到')
         return
@@ -62,7 +65,7 @@ const initPlayer = (url) => {
     videoPlayer.value = new SimplePlayer({
         id: 'xgplayer',
         url: url,
-        plugins: [FlvPlugin, Start, PC, Mobile, Play, Error, Fullscreen],
+        plugins: [FlvPlugin, PC, Mobile, Error],
         width: '100%',
         height: '100%',
         autoplayMuted: true,
@@ -75,12 +78,37 @@ const initPlayer = (url) => {
             maxLatency: 10, // 直播允许的最大延迟，默认 10 秒
             disconnectTime: 0, // 直播断流时间，默认 0 秒，（独立使用时等于 maxLatency）
         },
+        leavePlayerTime:0
     })
+    
+    // 添加播放状态监听
+    videoPlayer.value.on('play', () => {
+        updatePlayState(true);
+    });
+    
+    videoPlayer.value.on('pause', () => {
+        updatePlayState(false);
+    });
 }
 
 onMounted(() => {
     getStream()
 });
+// 监听全局播放状态变化
+watch(() => isPlaying.value, (newState) => {
+    if (videoPlayer.value) {
+        // 避免重复触发事件导致循环更新
+        const currentState = !videoPlayer.value.paused;
+        if (currentState !== newState) {
+            if (newState) {
+                videoPlayer.value.play();
+            } else {
+                videoPlayer.value.pause();
+            }
+        }
+    }
+});
+
 onUnmounted(() => {
     if (videoPlayer.value) {
         videoPlayer.value.destroy();
