@@ -1,6 +1,7 @@
 <template>
     <div class="score-board">
         <header class="header">
+            <button class="test-btn" @click="testAnimation">测试动画</button>
             <!-- <div class="title">球员得分信息</div> -->
             <div class="summary">
                 <div>总得分：<strong style="color: #2a9cf3;  font-size: 20px;">{{ totalPoints }}</strong></div>
@@ -28,7 +29,7 @@
                 <div class="cell pct">得分占比</div>
             </div>
             <!-- <vue-seamless-scroll class="list" :data="sortedPlayers" direction="top" :steep="0.3" roller :distance="10"> -->
-            <div class="list">
+            <transition-group name="bubble" class="list">
                 <div class="row content" v-for="(p, idx) in sortedPlayers" :key="p.id ?? idx"
                     :class="{ highlight: p.points === topScore }">
                     <div class="cell num">{{ p.number ?? idx + 1 }}</div>
@@ -43,18 +44,14 @@
                         <div class="percent-text">{{ percent(p) }}%</div>
                     </div>
                 </div>
-            </div>
+            </transition-group>
             <!-- </vue-seamless-scroll> -->
         </div>
-
-        <!-- <footer class="sb-footer">
-            <div class="note">数据来源：示例数据 / 可通过 props 传入实时数据</div>
-        </footer> -->
     </div>
 </template>
 
 <script setup>
-import { computed, reactive, toRefs } from 'vue';
+import { computed, reactive, toRefs, ref } from 'vue';
 
 const props = defineProps({
     // 支持传入 players 数组：[{ id, number, name, points, rebounds, assists }]
@@ -64,14 +61,54 @@ const props = defineProps({
     },
 });
 
-// 如果未传入 props.players，使用本地示例数据，便于独立预览
-const samplePlayers = [
-    { id: 1, number: 7, name: '张三', points: 24, rebounds: 8, assists: 5 },
-    { id: 2, number: 9, name: '李四', points: 17, rebounds: 6, assists: 7 },
-    { id: 3, number: 11, name: '王五', points: 30, rebounds: 10, assists: 4 },
-    { id: 4, number: 15, name: '赵六', points: 12, rebounds: 3, assists: 2 },
-    { id: 5, number: 23, name: '钱七', points: 8, rebounds: 2, assists: 1 },
-];
+// 使用响应式数据以便测试动画效果
+const testPlayers = ref([
+    { id: 1, number: 7, name: '张三', points: 1, rebounds: 8, assists: 5 },
+    { id: 2, number: 9, name: '李四', points: 1, rebounds: 6, assists: 7 },
+    { id: 3, number: 11, name: '王五', points: 1, rebounds: 10, assists: 4 },
+    { id: 4, number: 15, name: '赵六', points: 1, rebounds: 3, assists: 2 },
+]);
+
+const currentIndex = ref(0)
+// 测试方法：随机增加某个球员的得分
+function testAnimation() {
+    const players = testPlayers.value
+
+    // 先重置所有人的分数为 1（可选，如果你想让他们每次都从同一起跑线）
+    // 如果你希望保持他们之前的分数，只提升当前球员，则不用这步
+    // for (const p of players) {
+    //   p.points = 1
+    // }
+
+    // 方案：我们让当前球员的分数明显高于其他人（比如其他人保持 1，他设为 10）
+    const basePoints = 1       // 其他球员的分数
+    const topPoints = 10       // 当前“得分王”的分数（你可以设为更高的值，或动态计算）
+
+    // 先将所有球员设为 basePoints（比如 1），你也可以注释掉这步，看效果差异
+    for (const p of players) {
+        p.points = basePoints
+    }
+
+    // 计算倒序中的索引：比如总共有 4 个球员，倒序第 0 个是 id:4，第 1 个是 id:3 ...
+    const reverseIndex = currentIndex.value
+
+    // 真实的数组索引 = 总长度 - 1 - reverseIndex
+    const playerIndex = players.length - 1 - reverseIndex
+
+    // 边界保护（其实不会越界，因为 reverseIndex < players.length）
+    if (playerIndex >= 0 && playerIndex < players.length) {
+        const targetPlayer = players[playerIndex]
+        targetPlayer.points = topPoints  // 让他成为最高分
+    }
+
+    // 更新 currentIndex，指向下一个（倒序中的下一个）
+    currentIndex.value++
+
+    // 如果已经轮完一轮（比如 4 个球员都当过一次最高分），重置为 0，从最后一个开始
+    if (currentIndex.value >= players.length) {
+        currentIndex.value = 0
+    }
+}
 
 const state = reactive({
     sortBy: 'points',
@@ -80,7 +117,7 @@ const state = reactive({
 const playersList = computed(() => {
     return props.players && Array.isArray(props.players) && props.players.length
         ? props.players
-        : samplePlayers;
+        : testPlayers.value;
 });
 
 const totalPoints = computed(() => playersList.value.reduce((s, p) => s + (p.points || 0), 0));
@@ -121,7 +158,7 @@ const { sortBy } = toRefs(state);
 
     .header {
         display: flex;
-        justify-content: space-around;
+        justify-content: space-between;
         align-items: center;
         padding: 0px 20px;
         // border-bottom: 1px solid rgba(255, 255, 255, 0.04);
@@ -163,6 +200,29 @@ const { sortBy } = toRefs(state);
         background-color: #1a365d;
     }
 
+    .test-btn {
+        padding: 8px 16px;
+        background: linear-gradient(135deg, #0077ff, #3bb0ff);
+        color: white;
+        border: none;
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(0, 119, 255, 0.3);
+    }
+
+    .test-btn:hover {
+        background: linear-gradient(135deg, #0066dd, #2aa0ee);
+        box-shadow: 0 6px 16px rgba(0, 119, 255, 0.4);
+        transform: translateY(-1px);
+    }
+
+    .test-btn:active {
+        transform: translateY(0);
+    }
+
     .table {
         height: 100%;
         padding: 0px 10px;
@@ -173,6 +233,72 @@ const { sortBy } = toRefs(state);
             padding: 0;
             // height: calc(100% - 95px);
             overflow: hidden;
+            position: relative;
+        }
+
+        /* 冒泡排序动画效果 */
+        .bubble-move {
+            transition: all 0.6s ease-in-out;
+        }
+
+        // .bubble-enter-active,
+        // .bubble-leave-active {
+        //     transition: all 0.5s ease;
+        // }
+
+        // .bubble-enter-from {
+        //     opacity: 0;
+        //     transform: translateY(30px);
+        // }
+
+        // .bubble-leave-to {
+        //     opacity: 0;
+        //     transform: translateY(-30px);
+        // }
+
+        /* 1. 声明过渡效果 */
+        .bubble-move,
+        .bubble-enter-active,
+        .bubble-leave-active {
+            transition: all 0.5s cubic-bezier(0.55, 0, 0.1, 1);
+        }
+
+        /* 2. 声明进入和离开的状态 */
+        .bubble-enter-from,
+        .bubble-leave-to {
+            opacity: 0;
+            transform: scaleY(0.01) translate(30px, 0);
+        }
+
+        /* 3. 确保离开的项目被移除出了布局流
+      以便正确地计算移动时的动画效果。 */
+        .bubble-leave-active {
+            position: absolute;
+        }
+
+
+        /* 为新的第一名添加特殊高亮动画 */
+        .row.content.highlight {
+            background: linear-gradient(90deg, rgba(0, 120, 255, 0.08), rgba(0, 180, 255, 0.03));
+            box-shadow: 0 6px 18px rgba(0, 120, 255, 0.06);
+            animation: bubble-top 1s ease-out;
+        }
+
+        @keyframes bubble-top {
+            0% {
+                // transform: scale(1);
+                background: linear-gradient(90deg, rgba(0, 120, 255, 0.08), rgba(0, 180, 255, 0.03));
+            }
+
+            50% {
+                // transform: scale(1.05);
+                background: linear-gradient(90deg, rgba(0, 120, 255, 0.2), rgba(0, 180, 255, 0.15));
+            }
+
+            100% {
+                // transform: scale(1);
+                background: linear-gradient(90deg, rgba(0, 120, 255, 0.08), rgba(0, 180, 255, 0.03));
+            }
         }
 
         .row {
@@ -190,7 +316,7 @@ const { sortBy } = toRefs(state);
         }
 
         .row.content {
-            height: 20px;
+            // height: 20px;
             margin-bottom: 0px;
         }
 
@@ -244,18 +370,6 @@ const { sortBy } = toRefs(state);
             text-align: right;
             // font-size: 12px;
             color: #cfeeff
-        }
-
-        .sb-footer {
-            padding: 10px 16px;
-            font-size: 12px;
-            color: #8fbfe6;
-            background: rgba(0, 0, 0, 0.02);
-            border-top: 1px solid rgba(255, 255, 255, 0.02)
-        }
-
-        .note {
-            opacity: 0.8
         }
 
     }
