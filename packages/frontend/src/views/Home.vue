@@ -69,8 +69,7 @@
                 <div class="item1">
                     <Border ref="hlightMomentRef" name="高光时刻" :key="currentVenueIndex" icon="icon-changguanxinxi"
                         type="min" :delay="0.7" :duration="0.5">
-                        <HlightMoment ref="momentRef" />
-                        <!-- :highlights="highlightMoments" -->
+                        <HlightMoment ref="momentRef" :highlights="highlightMoments" />
                     </Border>
                     <!-- <HlightMoment /> -->
                 </div>
@@ -119,7 +118,6 @@ const highlightMoments = reactive([]);
 const getHighlightMoment = async () => {
     try {
         const res = (await getAllHighlight()).data || [];
-        // console.log('获取高光集锦成功:', highlightMoments);
         highlightMoments.splice(0, highlightMoments.length, ...res.slice(0, 5));
     } catch (error) {
         console.error('获取高光集锦失败:', error);
@@ -358,12 +356,15 @@ const handleThumbnailClick = (screenshot, index) => {
 const removeScreenshot = (id) => {
     let res = screenshots.value.find(s => s.id === id);
     const data = {
-        id: 99,
+        highlight: {
+            id: 33,
+            videoPath: videoMp4,
+            imagePath: res.url,
+            currentScore: 3,         // 例如：这个高光得了3分
+            createTime: res.timestamp.split(" ")[1],
+            updateTime: res.timestamp.split(" ")[1],
+        },
         playerName: "测试玩家",
-        time: res.timestamp.split(" ")[1],
-        title: "测试截图删除",
-        thumbnail: res.url,
-        videoPath: videoMp4,
     }
     momentRef.value.updateMomentList(data);
     console.log('删除截图:', data);
@@ -601,7 +602,7 @@ onMounted(() => {
         }
 
         .wrapper-hlightMoment {
-            height: calc(60%);
+            height: calc(70%);
             width: calc(15%);
             position: fixed;
             right: 20px;
