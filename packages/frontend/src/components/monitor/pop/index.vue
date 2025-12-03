@@ -2,7 +2,6 @@
   <div class="popBody">
     <el-button @click="getShow" type="primary">弹窗</el-button>
     <pop ref="pop" pop-width="1000px" pop-height="600px">
-      dsfsdfsd
     </pop>
   </div>
 </template>

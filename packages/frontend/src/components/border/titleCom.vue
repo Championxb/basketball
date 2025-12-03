@@ -211,11 +211,12 @@ const titleArray = computed(() => props.name.split(''))
   i {
     font-size: 20px;
     // 渐变色
-    background: linear-gradient(to bottom, #fff, #09c3dc); // 上橙下粉为例
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    color: transparent;
+    // background: linear-gradient(to bottom, #fff, #09c3dc); // 上橙下粉为例
+    // -webkit-background-clip: text;
+    // -webkit-text-fill-color: transparent;
+    // background-clip: text;
+    // color: transparent;
+    color: #09c3dc;
   }
 }
 </style>

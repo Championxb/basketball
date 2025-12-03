@@ -1,18 +1,20 @@
-import { defineConfig, loadEnv } from 'vite';
+import { defineConfig, loadEnv } from "vite";
 import vue from "@vitejs/plugin-vue";
 import AutoImport from "unplugin-auto-import/vite";
 import Components from "unplugin-vue-components/vite";
 import { ElementPlusResolver } from "unplugin-vue-components/resolvers";
 // https://vite.dev/config/
 export default defineConfig(({ command, mode }) => {
-  const env = loadEnv(mode, process.cwd(), 'VITE_');
+  const env = loadEnv(mode, process.cwd(), "VITE_");
 
   // 构建后端代理目标地址：如果 VITE_API_TARGET 中没有端口且提供了 VITE_API_PROXY_PORT 则追加端口
   const apiTarget = env.VITE_API_TARGET;
   const apiPort = env.VITE_API_PROXY_PORT;
   const target = apiTarget + `:${apiPort}`;
-  console.log('[Vite Config] apiTarget:', apiTarget, 'apiPort:', apiPort);
-  return{
+  const staticSource = env.VITE_STATIC_RESOURCE + `:${env.VITE_STATIC_PORT}`;
+  // console.log("[Vite Config] apiTarget:", apiTarget, "apiPort:", apiPort);
+  // console.log("staticSource:", staticSource);
+  return {
     resolve: {
       alias: {
         "@": "/src",
@@ -40,18 +42,28 @@ export default defineConfig(({ command, mode }) => {
       cors: true,
       proxy: {
         // 登录相关请求代理到 localhost:3000
-        '/api/auth': {
-          target: 'http://localhost:3000',
+        "/api/auth": {
+          target: "http://localhost:3000",
           changeOrigin: true,
           secure: false,
         },
         // 其他API请求代理到环境变量配置的目标
-        '/api': {
+        "/api": {
           target: target,
           changeOrigin: true,
           secure: false,
-        }
-      }
+        },
+        "/highlight": {
+          target: target,
+          changeOrigin: true,
+          secure: false,
+        },
+        "/project": {
+          target: staticSource,
+          changeOrigin: true,
+          secure: false,
+        },
+      },
     },
     build: {
       modulePreload: false, // 禁用 modulePreload 防止Referer丢失
@@ -70,5 +82,5 @@ export default defineConfig(({ command, mode }) => {
         },
       },
     },
-  }
+  };
 });

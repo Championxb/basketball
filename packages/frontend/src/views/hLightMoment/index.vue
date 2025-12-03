@@ -6,22 +6,25 @@
         </header> -->
 
         <div class="hl-list">
-            <div class="hl-card" v-for="(h, idx) in highlightsList" :key="h.id ?? idx">
-                <div class="thumb" @click="open(h)">
-                    <div class="poster" :style="{ backgroundImage: `url(${h.thumbnail || defaultThumb})` }">
-                        <div class="play-icon">▶</div>
+            <TransitionGroup name="moment" class="list">
+                <div class="hl-card" v-for="(h, idx) in highlightsList" :key="h.id ?? idx">
+                    <div class="thumb" @click="open(h)">
+                        <div class="poster" :style="{ backgroundImage: `url(${h.thumbnail || defaultThumb})` }">
+                            <div class="play-icon">▶</div>
+                        </div>
                     </div>
-                </div>
-                <div class="meta">
-                    <div class="title">{{ h.title }}</div>
-                    <div class="info">{{ h.playerName }} · {{ formatTime(h.time) }}</div>
-                    <!-- <div class="actions">
+                    <div class="meta">
+                        <div class="title">{{ h.title }}</div>
+                        <!-- <div class="info">{{ h.playerName }} ·{{ h.highlight.currentScore }}分</div> -->
+                        <!-- {{ formatTime(h.time) }} -->
+                        <!-- <div class="actions">
                         <button class="btn" @click="open(h)">播放</button>
                         <button class="btn link" :href="h.videoUrl" :download="downloadName(h)" target="_blank"
                             rel="noreferrer">下载</button>
                     </div> -->
+                    </div>
                 </div>
-            </div>
+            </TransitionGroup>
         </div>
         <Transition name="modal-fade">
             <div v-if="active" class="modal" @click.self="close">
@@ -31,7 +34,7 @@
                         <button class="close" @click="close">✕</button>
                     </div>
                     <div class="modal-content">
-                        <video ref="videoEl" :src="active.videoUrl" controls controlsList="nodownload" autoplay
+                        <video ref="videoEl" :src="active.videoPath" controls controlsList="nodownload" autoplay
                             playsinline></video>
                         <div class="modal-info">
                             <p>{{ active.description }}</p>
@@ -69,7 +72,8 @@ const props = defineProps({
 
 const defaultThumb = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="640" height="360"><rect width="100%" height="100%" fill="%2300253f"/><text x="50%" y="50%" fill="%23a6d8ff" font-size="24" text-anchor="middle" dy="8">No Thumbnail</text></svg>';
 
-const sample = [
+
+const sample = ref([
     {
         id: 1,
         playerName: '张三',
@@ -77,7 +81,7 @@ const sample = [
         title: '张三 关键三分',
         description: '第四节最后两分钟，张三在弧顶命中关键三分。',
         thumbnail: thumb1,
-        videoUrl: video1,
+        videoPath: video1,
     },
     {
         id: 2,
@@ -86,7 +90,7 @@ const sample = [
         title: '李四 空中接力',
         description: '团队配合，空中接力完成暴扣。',
         thumbnail: thumb2,
-        videoUrl: video2,
+        videoPath: video2,
     },
     {
         id: 3,
@@ -94,8 +98,8 @@ const sample = [
         time: '00:15:45',
         title: '王五 快攻上篮',
         description: '抢断后快速反击，上篮得分。',
-        thumbnail:thumb3,
-        videoUrl: video3,
+        thumbnail: thumb3,
+        videoPath: video3,
     },
     {
         id: 4,
@@ -104,7 +108,7 @@ const sample = [
         title: '赵六 后撤步三分',
         description: '后撤步创造空间，命中三分球。',
         thumbnail: thumb4,
-        videoUrl: video4,
+        videoPath: video4,
     },
     {
         id: 5,
@@ -113,7 +117,7 @@ const sample = [
         title: '孙七 绝平三分',
         description: '比赛最后时刻，孙七命中绝平三分。',
         thumbnail: thumb5,
-        videoUrl: video5,
+        videoPath: video5,
     },
     // {
     //     id: 6,
@@ -142,9 +146,9 @@ const sample = [
     //     thumbnail: '',
     //     videoUrl: videoMp4,
     // },
-];
+]);
 
-const highlightsList = computed(() => (props.highlights && props.highlights.length ? props.highlights : sample));
+const highlightsList = computed(() => (props.highlights && props.highlights.length ? props.highlights : sample.value));
 
 const active = ref(null);
 const videoEl = ref(null);
@@ -179,6 +183,16 @@ function formatTime(t) {
     const ss = Math.floor(s % 60);
     return [hh, mm, ss].map(n => String(n).padStart(2, '0')).join(':');
 }
+
+const updateMomentList = (data) => {
+    sample.value.pop();
+    sample.value.unshift(data);
+}
+
+// 显式暴露方法供父组件调用
+defineExpose({
+    updateMomentList
+});
 
 // 新增：用于监听键盘事件
 const handleEscKey = (event) => {
@@ -237,6 +251,32 @@ onUnmounted(() => {
     gap: 12px;
     padding: 4px;
 
+    .moment-move {
+        transition: all 0.6s ease-in-out;
+    }
+
+
+    /* 1. 声明过渡效果 */
+    .moment-move,
+    .moment-enter-active,
+    .moment-leave-active {
+        transition: all 0.5s cubic-bezier(0.55, 0, 0.1, 1);
+    }
+
+    /* 2. 声明进入和离开的状态 */
+    .moment-enter-from,
+    .moment-leave-to {
+        opacity: 0;
+        transform: scaleY(0.01) translate(30px, 0);
+    }
+
+    /* 3. 确保离开的项目被移除出了布局流
+      以便正确地计算移动时的动画效果。 */
+    .moment-leave-active {
+        position: absolute;
+    }
+
+
     .hl-card {
         background: linear-gradient(90deg, rgba(72, 134, 181, 0.3), rgba(21, 87, 129, 0.3));
         // background: #000;
@@ -245,7 +285,7 @@ onUnmounted(() => {
         display: flex;
         gap: 8px;
         align-items: flex-start;
-        
+
         .thumb {
             height: 100%;
             flex: 0 0 120px;

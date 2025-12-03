@@ -27,7 +27,7 @@
     :pop-height="'600px'"
     :title="popTitle"
   >
-    <div class="video-container">
+    <div class="video-container" ref="pvc">
       <video ref="videoPlayer" autoplay muted loop controls>
         <source :src="videoSrc" type="video/mp4" />
         您的浏览器不支持 video 标签。
@@ -45,6 +45,7 @@ import img3 from "./assets/3.jpg";
 import img4 from "./assets/4.jpg";
 import pop from "./pop/pop.vue";
 import videoMp4 from "./assets/video.mp4";
+const pvc = ref(null);
 
 // const images = [img1, img2, img3, img4, img1, img2, img3, img4];
 const images = [img1];

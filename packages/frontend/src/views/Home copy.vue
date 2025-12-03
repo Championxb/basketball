@@ -9,19 +9,16 @@
         <!-- 截图按钮 -->
         <button class="screenshot-btn" @click="handleScreenshot">截图</button>
 
-        <!-- 截图动画容器 -->
-        <div ref="screenshotAnimationContainer" class="screenshot-animation-container"></div>
         <!-- 悬浮缩略图列表 -->
         <div class="screenshot-thumbnails" v-if="screenshots.length > 0">
-            <!-- @click="handleThumbnailClick(screenshot, index)" -->
-
             <div v-for="(screenshot, index) in screenshots" :key="screenshot.id" class="screenshot-thumbnail"
-                @click="showPop(index + 1)" :style="{ right: `${index * 160 + 20}px`, bottom: '20px' }"
-                :data-index="index" :ref="el => setThumbnailRef(el, index)">
+                @click="handleThumbnailClick(screenshot)" :style="{ right: `${index * 160 + 20}px`, bottom: '20px' }"
+                :data-index="index">
                 <img :src="screenshot.url" :alt="`截图 ${index + 1}`" />
                 <button class="close-btn" @click.stop="removeScreenshot(screenshot.id)">×</button>
             </div>
         </div>
+
         <!-- 全屏查看模态框 -->
         <transition name="modal">
             <div v-if="showFullScreenScreenshot" class="fullscreen-modal" @click="closeFullScreenView">
@@ -33,18 +30,9 @@
                 </div>
             </div>
         </transition>
-        <Pop ref="popRef" :pop-width="'1000px'" :pop-height="'600px'">
-            <div class="popVideoContainer">
-                <video ref="videoPlayer" autoplay muted loop controls>
-                    <source :src="videoSrc" type="video/mp4" />
-                    您的浏览器不支持 video 标签。
-                </video>
-            </div>
-        </Pop>
         <div class="container">
             <div class="wrapper_center">
                 <!-- <VideoPlay /> -->
-                <!-- <Monitor /> -->
             </div>
             <div class="wrapper_tdCourt" v-draggable @dblclick="changeSize">
                 <div class="item1">
@@ -52,7 +40,7 @@
                         type="min" :delay="0.2" :duration="0.5">
                         <TDCourt />
                     </Border> -->
-                    <!-- <TDCourt /> -->
+                    <TDCourt />
                 </div>
             </div>
             <div class="wrapper_scoreBoard" v-draggable>
@@ -69,10 +57,8 @@
                 <div class="item1">
                     <Border ref="hlightMomentRef" name="高光时刻" :key="currentVenueIndex" icon="icon-changguanxinxi"
                         type="min" :delay="0.7" :duration="0.5">
-                        <HlightMoment ref="momentRef" />
-                        <!-- :highlights="highlightMoments" -->
+                        <HlightMoment />
                     </Border>
-                    <!-- <HlightMoment /> -->
                 </div>
             </div>
         </div>
@@ -80,82 +66,45 @@
 </template>
 
 <script setup>
-import { ref, onMounted, nextTick, provide, reactive } from "vue";
+import { ref, onMounted, nextTick, provide } from "vue";
 import WOW from "wow.js";
 import gsap from "gsap";
-import html2canvas from 'html2canvas';
+import html2canvas from "html2canvas";
 import VideoPlay from "@views/videoPlay/index.vue";
 import ScoreBoard from "@/views/scoreBoard/index.vue";
 import HlightMoment from "@/views/hLightMoment/index.vue";
 import TDCourt from "@/views/tDCourt/index.vue";
-import Pop from "@/components/monitor/pop/pop.vue";
 import CheckButton from "@components/checkButton/index.vue";
 // import Header from "@/components/header/header.vue";
 // import Border from "@/components/border/border.vue";
-import { getAllHighlight } from '@/api/highLight.js';
-import videoMp4 from "@assets/video/11月25日.mp4"
-
-const momentRef = ref(null);
-const popRef = ref(null);
-const videoPlayer = ref(null);
-const videoSrc = ref("");
-
-const showPop = (index) => {
-    videoSrc.value = videoMp4;
-    popRef.value.getShow();
-    // 等待 Pop 弹出后再播放视频
-    // 注意：由于Pop组件有1秒的动画时间，需要等待showInner变为true且插槽内容渲染完成
-    setTimeout(() => {
-        nextTick(() => {
-            // console.log(pvc.value);
-            // 此时pvc.value应该已经可以访问
-            videoPlayer.value?.play();
-        });
-    }, 1100); // 设置稍长于动画时间的延迟
-
-}
-// 获取高光集锦
-const highlightMoments = reactive([]);
-const getHighlightMoment = async () => {
-    try {
-        const res = (await getAllHighlight()).data || [];
-        // console.log('获取高光集锦成功:', highlightMoments);
-        highlightMoments.splice(0, highlightMoments.length, ...res.slice(0, 5));
-    } catch (error) {
-        console.error('获取高光集锦失败:', error);
-    }
-}
-
+// import Monitor from "@/views/monitor/index.vue";
 
 // 截图相关状态和函数
 const screenshots = ref([]);
 const showFullScreenScreenshot = ref(false);
 const currentScreenshot = ref(null);
-// 截图动画容器引用
-const screenshotAnimationContainer = ref(null);
 
 // 处理截图按钮点击事件
 const handleScreenshot = async () => {
-    // 禁用按钮防止重复点击
-    const screenshotBtn = document.querySelector('.screenshot-btn');
-    const originalText = screenshotBtn.innerText;
-    screenshotBtn.innerText = '截图中...';
-    // screenshotBtn.disabled = true;
-
-    // 隐藏截图按钮和所有已有的缩略图，避免截图中包含它们
-    const originalDisplay = screenshotBtn.style.display;
-    // screenshotBtn.style.display = 'none';
-
-    const thumbnails = document.querySelectorAll('.screenshot-thumbnail');
-    thumbnails.forEach(thumb => {
-        thumb.style.display = 'none';
-    });
-
-    // 等待DOM更新
-    await nextTick();
-    console.log('开始截图处理');
-
     try {
+        // 禁用按钮防止重复点击
+        const screenshotBtn = document.querySelector('.screenshot-btn');
+        const originalText = screenshotBtn.textContent;
+        screenshotBtn.textContent = '截图中...';
+        screenshotBtn.disabled = true;
+        
+        // 隐藏截图按钮和所有已有的缩略图，避免截图中包含它们
+        const originalDisplay = screenshotBtn.style.display;
+        screenshotBtn.style.display = 'none';
+        
+        const thumbnails = document.querySelectorAll('.screenshot-thumbnail');
+        thumbnails.forEach(thumb => {
+            thumb.style.display = 'none';
+        });
+        
+        // 等待DOM更新
+        await nextTick();
+        
         // 使用html2canvas截取整个页面
         const screenshot = await html2canvas(document.body, {
             scale: 1.5, // 提高质量
@@ -165,208 +114,58 @@ const handleScreenshot = async () => {
             backgroundColor: '#ffffff', // 确保背景色正确
             ignoreElements: (element) => {
                 // 忽略特定元素
-                return element.classList.contains('screenshot-btn') ||
-                    element.classList.contains('screenshot-thumbnail');
+                return element.classList.contains('screenshot-btn') || 
+                       element.classList.contains('screenshot-thumbnail');
             }
         });
-
+        
+        // 恢复UI元素显示
+        screenshotBtn.style.display = originalDisplay;
+        thumbnails.forEach(thumb => {
+            thumb.style.display = 'block';
+        });
+        
         // 将Canvas转换为图片URL
         const imgData = screenshot.toDataURL('image/png');
-
+        
         // 创建截图对象
         const screenshotObj = {
             id: Date.now(),
             url: imgData,
             timestamp: new Date().toLocaleString()
         };
-
+        
         // 添加到截图数组中
         screenshots.value.push(screenshotObj);
-
-        // 等待DOM更新，确保新添加的缩略图已经渲染
-        await nextTick();
-
-        // 执行截图动画
-        if (screenshotAnimationContainer.value) {
-            // 创建临时图片元素用于动画
-            const tempImg = document.createElement('img');
-            tempImg.src = imgData;
-            tempImg.className = 'screenshot-animation-image';
-            tempImg.style.opacity = '0';
-            screenshotAnimationContainer.value.appendChild(tempImg);
-
-            // 等待图片加载完成
-            tempImg.onload = () => {
-                // 获取新添加的缩略图位置（应该是最后一个）
-                const newThumbnail = document.querySelector(`.screenshot-thumbnail[data-index="${screenshots.value.length - 1}"]`);
-                if (newThumbnail) {
-                    const thumbnailRect = newThumbnail.getBoundingClientRect();
-
-                    // 使用gsap执行动画：从全屏显示缩小到右下角缩略图位置
-                    gsap.fromTo(tempImg,
-                        {
-                            opacity: 1,
-                            width: '100vw',
-                            height: '100vh',
-                            left: '0%',
-                            top: '0%',
-                            x: 0,
-                            y: 0,
-                            position: 'fixed',
-                            zIndex: 9999,
-                            objectFit: 'contain'
-                        },
-                        {
-                            opacity: 1,
-                            width: thumbnailRect.width + 'px',
-                            height: thumbnailRect.height + 'px',
-                            left: '100%',
-                            top: '100%',
-                            x: -thumbnailRect.width - 20,
-                            y: -thumbnailRect.height - 20,
-                            duration: 0.8,
-                            ease: 'power2.in',
-                            onComplete: () => {
-                                // 动画完成后移除临时图片
-                                if (tempImg.parentNode) {
-                                    tempImg.parentNode.removeChild(tempImg);
-                                }
-                            }
-                        }
-                    );
-                } else {
-                    // 如果缩略图不存在，直接清理
-                    if (tempImg.parentNode) {
-                        tempImg.parentNode.removeChild(tempImg);
-                    }
-                }
-            };
-        }
-
-        // 恢复UI元素显示
-        screenshotBtn.style.display = originalDisplay;
-        thumbnails.forEach(thumb => {
-            thumb.style.display = 'block';
-        });
-
+        
         console.log('截图成功，尺寸:', screenshot.width, 'x', screenshot.height);
         console.log('缩略图数量:', screenshots.value.length);
-
+        
     } catch (error) {
         console.error('截图失败:', error);
-        // 恢复UI元素显示
-        const screenshotBtn = document.querySelector('.screenshot-btn');
-        screenshotBtn.style.display = '';
-        const thumbnails = document.querySelectorAll('.screenshot-thumbnail');
-        thumbnails.forEach(thumb => {
-            thumb.style.display = 'block';
-        });
+        // 可以在这里添加用户提示，如alert或其他UI反馈
     } finally {
         // 恢复按钮状态
         const screenshotBtn = document.querySelector('.screenshot-btn');
-        screenshotBtn.innerText = originalText;
+        screenshotBtn.textContent = '截图';
         screenshotBtn.disabled = false;
     }
 };
 
-// 缩略图引用数组
-const thumbnailRefs = ref([]);
-// 动画容器引用
-const animationContainer = ref(null);
-
-// 设置缩略图引用
-const setThumbnailRef = (el, index) => {
-    if (el) {
-        thumbnailRefs.value[index] = el;
-    }
+// 处理缩略图点击事件
+const handleThumbnailClick = (screenshot) => {
+    currentScreenshot.value = screenshot;
+    showFullScreenScreenshot.value = true;
 };
 
-// 处理缩略图点击事件
-const handleThumbnailClick = (screenshot, index) => {
-    // 使用现有的screenshotAnimationContainer进行动画
-    if (!screenshotAnimationContainer.value) return;
-
-    // 创建临时图片元素
-    const tempImg = document.createElement('img');
-    tempImg.src = screenshot.url;
-    tempImg.className = 'screenshot-animation-image';
-    tempImg.style.opacity = '0';
-    screenshotAnimationContainer.value.appendChild(tempImg);
-
-    // 等待图片加载完成
-    tempImg.onload = () => {
-        // 获取当前缩略图元素
-        const thumbnail = document.querySelector(`.screenshot-thumbnail[data-index="${index}"]`);
-        if (!thumbnail) {
-            // 如果找不到缩略图，直接清理临时图片
-            if (tempImg.parentNode) {
-                tempImg.parentNode.removeChild(tempImg);
-            }
-            return;
-        }
-
-        // 获取缩略图位置
-        const thumbnailRect = thumbnail.getBoundingClientRect();
-
-        // 全屏显示动画
-        gsap.fromTo(tempImg,
-            {
-                opacity: 1,
-                width: thumbnailRect.width + 'px',
-                height: thumbnailRect.height + 'px',
-                left: '100%',
-                top: '100%',
-                x: -thumbnailRect.width - 20,
-                y: -thumbnailRect.height - 20,
-                duration: 0.8,
-                ease: 'power2.in',
-            },
-            {
-                opacity: 1,
-                width: '90vw',
-                height: '90vh',
-                left: '50%',
-                top: '50%',
-                transform: 'translate(-50%, -50%)',
-                x: 0,
-                y: 0,
-                position: 'fixed',
-                zIndex: 9999,
-                objectFit: 'contain',
-                onComplete: () => {
-                    // 短暂停留后移除临时图片，不再做缩小动画
-                    setTimeout(() => {
-                        gsap.to(tempImg, {
-                            opacity: 0,
-                            duration: 0.3,
-                            ease: 'power2.in',
-                            onComplete: () => {
-                                // 动画完成后移除临时图片
-                                if (tempImg.parentNode) {
-                                    tempImg.parentNode.removeChild(tempImg);
-                                }
-                            }
-                        });
-                    }, 1500); // 显示1.5秒后淡出
-                }
-            }
-        );
-    };
+// 关闭全屏查看
+const closeFullScreenView = () => {
+    showFullScreenScreenshot.value = false;
+    currentScreenshot.value = null;
 };
 
 // 移除截图
 const removeScreenshot = (id) => {
-    let res = screenshots.value.find(s => s.id === id);
-    const data = {
-        id: 99,
-        playerName: "测试玩家",
-        time: res.timestamp.split(" ")[1],
-        title: "测试截图删除",
-        thumbnail: res.url,
-        videoPath: videoMp4,
-    }
-    momentRef.value.updateMomentList(data);
-    console.log('删除截图:', data);
     screenshots.value = screenshots.value.filter(s => s.id !== id);
 };
 
@@ -382,10 +181,88 @@ provide('playerState', {
     updatePlayState
 });
 
+// 当前选中的场馆索引
+const currentVenueIndex = ref(0);
+// 组件唯一key，用于强制重新创建组件
+const componentKeys = ref({
+    venueMonitor: Date.now(),
+    tdCourt: Date.now() + 1,
+    scoreBoard: Date.now() + 2,
+    hlightMoment: Date.now() + 3,
+});
+
+const courtDrag = ref(null);
+const venueMonitorRef = ref(null);
+const tdCourtRef = ref(null);
+const scoreBoardRef = ref(null);
+const hlightMomentRef = ref(null);
+
+const bgScreen = ref(null);
+// const changeSize = () => {
+//     gsap.to(bgScreen.value, {
+//         height: "100vh",
+//         width: "100vw",
+//         position: 'fixed',
+//         delay: 0.2,
+//         top: 0,
+//         left: 0,
+//         duration: 1,
+//         ease: "none",
+//     });
+// }
+
+const handleVenueChange = (items) => {
+    // 获取当前选中的场馆索引
+    const selectedIndex = items.findIndex((item) => item.checked);
+    if (selectedIndex !== currentVenueIndex.value) {
+        currentVenueIndex.value = selectedIndex;
+        // 执行切换动画
+        performSwitchAnimation(selectedIndex);
+    }
+};
+
+const performSwitchAnimation = (venueIndex) => {
+    // 场馆监控：从右往左切出，再左往右切入
+    if (venueMonitorRef.value) {
+        venueMonitorRef.value.slideOutRight(() => {
+            // 切出完成后，模拟加载新内容
+            setTimeout(() => {
+                venueMonitorRef.value.slideInLeft();
+            }, 300);
+        });
+    }
+
+    // 二维球场：从左往右切出，再右往右切入
+    if (tdCourtRef.value) {
+        tdCourtRef.value.slideOutLeft(() => {
+            setTimeout(() => {
+                tdCourtRef.value.slideInRight();
+            }, 300);
+        });
+    }
+
+    // 得分看板：从左往右切出，再右往右切入
+    if (scoreBoardRef.value) {
+        scoreBoardRef.value.slideOutLeft(() => {
+            setTimeout(() => {
+                scoreBoardRef.value.slideInRight();
+            }, 300);
+        });
+    }
+
+    // 高光时刻：从上往下切入，再从下往上切入
+    if (hlightMomentRef.value) {
+        hlightMomentRef.value.slideOutTop(() => {
+            setTimeout(() => {
+                hlightMomentRef.value.slideInBottom();
+            }, 300);
+        });
+    }
+};
+
 onMounted(() => {
     const wow = new WOW({});
     wow.init();
-    getHighlightMoment();
 });
 </script>
 
@@ -401,24 +278,6 @@ onMounted(() => {
 
     .header {
         z-index: 4;
-    }
-
-    // 截图动画容器样式
-    .screenshot-animation-container {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        z-index: 9998;
-        pointer-events: none;
-    }
-
-    // 截图动画图片样式
-    .screenshot-animation-image {
-        position: fixed;
-        object-fit: contain;
-        pointer-events: none;
     }
 
     // 截图按钮样式
@@ -517,7 +376,84 @@ onMounted(() => {
         }
     }
 
-    // 保留原容器样式以避免CSS错误
+    // 全屏查看模态框样式
+    .fullscreen-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.8);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 2000;
+    }
+
+    .fullscreen-content {
+        position: relative;
+        max-width: 90%;
+        max-height: 90%;
+        background-color: white;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+
+        img {
+            max-width: 100%;
+            max-height: calc(100vh - 100px);
+            display: block;
+        }
+
+        .fullscreen-close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 10px 20px;
+            background-color: #f44336;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            opacity: 0.8;
+            transition: all 0.3s ease;
+
+            &:hover {
+                background-color: #d32f2f;
+                opacity: 1;
+                transform: scale(1.05);
+            }
+        }
+    }
+
+    // 模态框动画
+    .modal-enter-active,
+    .modal-leave-active {
+        transition: opacity 0.3s ease;
+    }
+
+    .modal-enter-from,
+    .modal-leave-to {
+        opacity: 0;
+    }
+
+    // 图片动画
+    .image-enter-active,
+    .image-leave-active {
+        transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .image-enter-from {
+        transform: scale(0.8) translateY(20px);
+        opacity: 0;
+    }
+
+    .image-leave-to {
+        transform: scale(0.8) translateY(-20px);
+        opacity: 0;
+    }
+
     .container {
         width: 100%;
         height: calc(100% - 100px);
@@ -613,7 +549,6 @@ onMounted(() => {
             flex-direction: row;
             align-content: flex-start;
             z-index: 100;
-            cursor: pointer;
 
             .item1 {
                 position: relative;
@@ -683,31 +618,5 @@ onMounted(() => {
     flex-wrap: nowrap;
     flex-direction: row;
     align-content: flex-start;
-}
-</style>
-
-<style>
-/* 非scoped样式，确保能应用到被teleport移动的popVideoContainer */
-.popVideoContainer {
-    width: 100% !important;
-    height: 100% !important;
-    position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-}
-
-/* 确保覆盖Pop组件中slot容器的默认背景色 */
-.popWinMainInner .slot {
-    background: transparent !important;
-}
-
-.popVideoContainer video {
-    max-width: 100%;
-    max-height: 100%;
-    width: 100%;
-    height: 100%;
-    position: relative;
 }
 </style>
