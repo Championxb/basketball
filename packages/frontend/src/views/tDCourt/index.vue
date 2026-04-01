@@ -24,7 +24,7 @@ import FlvPlugin from "xgplayer-flv";
 import API from '@api'
 
 // 注入播放器状态管理
-const { isPlaying, updatePlayState } = inject('playerState') || { isPlaying: ref(true), updatePlayState: () => {} };
+const { isPlaying, updatePlayState, isUserInteracted = ref(false) } = inject('playerState') || { isPlaying: ref(true), updatePlayState: () => { }, isUserInteracted: ref(false) };
 
 const videoPlayer = ref(null);
 const stream = ref('')
@@ -68,8 +68,8 @@ const initPlayer = (url) => {
         plugins: [FlvPlugin, PC, Mobile, Error],
         width: '100%',
         height: '100%',
-        autoplayMuted: true,
-        autoplay: true,
+        autoplayMuted: false,
+        autoplay: false,
         flv: {
             retryCount: 10, // 重试 3 次，默认值
             retryDelay: 1000, // 每次重试间隔 1 秒，默认值
@@ -78,14 +78,14 @@ const initPlayer = (url) => {
             maxLatency: 10, // 直播允许的最大延迟，默认 10 秒
             disconnectTime: 0, // 直播断流时间，默认 0 秒，（独立使用时等于 maxLatency）
         },
-        leavePlayerTime:0
+        leavePlayerTime: 0
     })
-    
+
     // 添加播放状态监听
     videoPlayer.value.on('play', () => {
         updatePlayState(true);
     });
-    
+
     videoPlayer.value.on('pause', () => {
         updatePlayState(false);
     });
@@ -94,6 +94,17 @@ const initPlayer = (url) => {
 onMounted(() => {
     getStream()
 });
+
+// 监听用户交互状态变化，当用户点击开始体验后才开始播放视频
+watch(() => isUserInteracted.value, (newVal) => {
+    if (newVal && videoPlayer.value) {
+        // 用户已交互，开始播放视频
+        videoPlayer.value.play().catch(err => {
+            console.error('自动播放失败:', err);
+        });
+    }
+});
+
 // 监听全局播放状态变化
 watch(() => isPlaying.value, (newState) => {
     if (videoPlayer.value) {

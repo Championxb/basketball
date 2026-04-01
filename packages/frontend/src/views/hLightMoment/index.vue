@@ -7,14 +7,15 @@
 
         <div class="hl-list">
             <TransitionGroup name="moment" class="list">
-                <div class="hl-card" v-for="(h, idx) in highlightsList" :key="h.id ?? idx">
+                <div class="hl-card" v-for="(h, idx) in highlightsList" :key="h.highlight.id ?? idx">
                     <div class="thumb" @click="open(h)">
-                        <div class="poster" :style="{ backgroundImage: `url(${h.highlight.imagePath || defaultThumb})` }">
+                        <div class="poster"
+                            :style="{ backgroundImage: `url(${h.highlight.imagePath || defaultThumb})` }">
                             <div class="play-icon">▶</div>
                         </div>
                     </div>
                     <div class="meta">
-                        <div class="title">{{ h.playerName }} {{ h.highlight.currentScore }} 分</div>
+                        <div class="title">{{ h.highlight.playerId }}号 {{ h.highlight.currentScore }}分</div>
                         <!-- <div class="info">{{ h.playerName }} ·{{ h.highlight.currentScore }}分</div> -->
                         <!-- {{ formatTime(h.time) }} -->
                         <!-- <div class="actions">
@@ -35,14 +36,14 @@
                             <button class="edit-btn" @click="openEditModal">编辑</button>
                         </div>
                         <div class="modal-download">
-                            <a class="btn" :href="active.highlight.videoPath" :download="downloadName(active)" target="_blank"
-                                rel="noreferrer">下载原片</a>
+                            <a class="btn" :href="active.highlight.videoPath" :download="downloadName(active)"
+                                target="_blank" rel="noreferrer">下载原片</a>
                         </div>
                         <button class="close" @click="close">✕</button>
                     </div>
                     <div class="modal-content">
-                        <video ref="videoEl" :src="active.highlight.videoPath" controls controlsList="nodownload" autoplay
-                            playsinline></video>
+                        <video ref="videoEl" :src="active.highlight.videoPath" controls controlsList="nodownload"
+                            autoplay playsinline></video>
                     </div>
                 </div>
             </div>
@@ -59,11 +60,11 @@
                     <div class="edit-content">
                         <div class="form-group">
                             <label>球员编号</label>
-                            <input type="text" v-model="editForm.title_id" class="edit-input" />
+                            <input type="text" v-model="editForm.playerName" class="edit-input" />
                         </div>
                         <div class="form-group">
                             <label>得分</label>
-                            <input type="text" placeholder="请输入得分(1-3分)" v-model="editForm.title_score"
+                            <input type="text" placeholder="请输入得分(1-3分)" v-model="editForm.currentScore"
                                 class="edit-input" />
                         </div>
                         <div class="edit-actions">
@@ -102,66 +103,66 @@ const defaultThumb =
 
 
 const sample = ref([
-  {
-    highlight: {
-      id: 1,
-      playerId: 101,           // 假设张三的 ID 是 101，你可以按需设置
-      videoPath: video1,
-      imagePath: thumb1,
-      currentScore: 3,         // 例如：这个高光得了3分
-      createTime: "2025-12-03T13:08:33.967Z",
-      updateTime: "2025-12-03T13:08:33.967Z"
+    {
+        highlight: {
+            id: 1,
+            playerId: 101,
+            videoPath: video1,
+            imagePath: thumb1,
+            currentScore: 3,
+            createTime: "2025-12-03T13:08:33.967Z",
+            updateTime: "2025-12-03T13:08:33.967Z"
+        },
+        playerName: '张三'
     },
-    playerName: '张三'
-  },
-  {
-    highlight: {
-      id: 2,
-      playerId: 102,
-      videoPath: video2,
-      imagePath: thumb2,
-      currentScore: 2,
-      createTime: "2025-12-03T13:08:33.967Z",
-      updateTime: "2025-12-03T13:08:33.967Z"
+    {
+        highlight: {
+            id: 2,
+            playerId: 102,
+            videoPath: video2,
+            imagePath: thumb2,
+            currentScore: 2,
+            createTime: "2025-12-03T13:08:33.967Z",
+            updateTime: "2025-12-03T13:08:33.967Z"
+        },
+        playerName: '李四'
     },
-    playerName: '李四'
-  },
-  {
-    highlight: {
-      id: 3,
-      playerId: 103,
-      videoPath: video3,
-      imagePath: thumb3,
-      currentScore: 1,
-      createTime: "2025-12-03T13:08:33.967Z",
-      updateTime: "2025-12-03T13:08:33.967Z"
+    {
+        highlight: {
+            id: 3,
+            playerId: 103,
+            videoPath: video3,
+            imagePath: thumb3,
+            currentScore: 1,
+            createTime: "2025-12-03T13:08:33.967Z",
+            updateTime: "2025-12-03T13:08:33.967Z"
+        },
+        playerName: '王五'
     },
-    playerName: '王五'
-  },
-  {
-    highlight: {
-      id: 4,
-      playerId: 104,
-      videoPath: video4,
-      imagePath: thumb4,
-      currentScore: 3,
-      createTime: "2025-12-03T13:08:33.967Z",
-      updateTime: "2025-12-03T13:08:33.967Z"
+    {
+        highlight: {
+            id: 4,
+            playerId: 104,
+            videoPath: video4,
+            imagePath: thumb4,
+            currentScore: 3,
+            createTime: "2025-12-03T13:08:33.967Z",
+            updateTime: "2025-12-03T13:08:33.967Z"
+        },
+        playerName: '赵六'
     },
-    playerName: '赵六'
-  },
-  {
-    highlight: {
-      id: 5,
-      playerId: 105,
-      videoPath: video5,
-      imagePath: thumb5,
-      currentScore: 5,
-      createTime: "2025-12-03T13:08:33.967Z",
-      updateTime: "2025-12-03T13:08:33.967Z"
-    },
-    playerName: '孙七'
-  }
+    {
+        highlight: {
+            id: 5,
+            playerId: 105,
+            videoPath: video5,
+            imagePath: thumb5,
+            currentScore: 5,
+            createTime: "2025-12-03T13:08:33.967Z",
+            updateTime: "2025-12-03T13:08:33.967Z"
+        },
+        playerName: '孙七'
+    }
 ])
 const highlightsList = computed(() => (props.highlights && props.highlights.length ? props.highlights : sample.value));
 
@@ -228,9 +229,16 @@ function formatTime(t) {
 }
 
 const updateMomentList = (data) => {
-    sample.value.pop();
-    sample.value.unshift(data);
-    console.log("高光列表已更新", sample.value);
+    if (props.highlights && props.highlights.length) {
+        props.highlights.unshift(data);
+        if (props.highlights.length > 4) {
+            props.highlights.pop();
+        }
+    } else {
+        sample.value.pop();
+        sample.value.unshift(data);
+        console.log("高光列表已更新", sample.value);
+    };
 }
 
 // 显式暴露方法供父组件调用
@@ -304,7 +312,7 @@ onUnmounted(() => {
 
     .hl-card {
         background: linear-gradient(90deg, rgba(72, 134, 181, 0.3), rgba(21, 87, 129, 0.3));
-        // background: #000;
+        //  background: #000;
         padding: 8px;
         border-radius: 8px;
         display: flex;
@@ -313,11 +321,11 @@ onUnmounted(() => {
 
         .thumb {
             height: 100%;
-            flex: 0 0 120px;
+            flex: 0 0 60%;
             cursor: pointer;
 
             .poster {
-                width: 120px;
+                width: 100%;
                 height: 100%;
                 background: rgba(0, 0, 0, 0.5);
                 background-size: cover;
@@ -339,18 +347,6 @@ onUnmounted(() => {
                     color: #fff;
                     font-weight: 700
                 }
-            }
-
-            .play-icon {
-                position: absolute;
-                left: 50%;
-                top: 50%;
-                transform: translate(-50%, -50%);
-                background: rgba(0, 0, 0, 0.5);
-                padding: 6px 10px;
-                border-radius: 6px;
-                color: #fff;
-                font-weight: 700;
             }
         }
     }
@@ -385,10 +381,73 @@ onUnmounted(() => {
 
 .modal-body {
     width: min(1000px, 95%);
-    height: min(700px, 95%);
-    background: linear-gradient(180deg, #021029, #04213a);
+    height: min(600px, 95%);
+    background: linear-gradient(45deg, #136aff, #3d5869);
     border-radius: 8px;
     overflow: hidden;
+
+    .modal-header {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        justify-content: center;
+        padding: 8px 12px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+
+        .modal-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 24px;
+            font-weight: 700;
+            color: #eaf6ff;
+
+            .edit-btn {
+                background: #0077ff;
+                color: white;
+                border: none;
+                border-radius: 4px;
+                padding: 4px 8px;
+                cursor: pointer;
+                font-size: 14px;
+                height: 30px;
+            }
+        }
+
+        .modal-download {
+            display: flex;
+            align-items: center;
+            flex: 1;
+            gap: 12px;
+            color: #cfeeff;
+
+            .btn {
+                margin-left: auto;
+                background: #0077ff;
+                color: #fff;
+                padding: 6px 10px;
+                border-radius: 4px;
+                border: none;
+                font-size: 15px;
+                cursor: pointer;
+                text-decoration: none;
+                display: inline-block;
+            }
+        }
+    }
+
+    .modal-content {
+        display: flex;
+        justify-content: center;
+        padding: 5px;
+
+        video {
+            width: 96%;
+            // height: 10%;
+            border-radius: 6px;
+        }
+    }
+
 }
 
 .edit-modal-body {
@@ -396,34 +455,6 @@ onUnmounted(() => {
     background: linear-gradient(180deg, #021029, #04213a);
     border-radius: 8px;
     overflow: hidden;
-}
-
-.modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 12px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
-}
-
-.modal-title {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 25px;
-    font-weight: 700;
-    color: #eaf6ff;
-
-    .edit-btn {
-        background: #0077ff;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        padding: 4px 8px;
-        cursor: pointer;
-        font-size: 14px;
-        height: 30px;
-    }
 }
 
 .modal .close {
@@ -434,41 +465,9 @@ onUnmounted(() => {
     cursor: pointer;
 }
 
-.modal-content {
-    display: flex;
-    justify-content: center;
-    gap: 12px;
-    padding: 12px;
-    font-size: 20px;
-}
 
-.modal-content video {
-    width: 95%;
-    height: 10%;
-    border-radius: 6px;
-}
 
-.modal-download {
-    display: flex;
-    align-items: center;
-    flex: 1;
-    gap: 12px;
-    padding: 8px;
-    color: #cfeeff;
 
-    .btn {
-        margin-left: auto;
-        background: #0077ff;
-        color: #fff;
-        padding: 6px 10px;
-        border-radius: 4px;
-        border: none;
-        cursor: pointer;
-        text-decoration: none;
-        display: inline-block;
-        margin-top: 12px;
-    }
-}
 
 /* 编辑弹框样式 */
 .edit-content {

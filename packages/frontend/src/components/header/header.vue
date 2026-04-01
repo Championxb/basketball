@@ -1,14 +1,18 @@
 <template>
   <div class="pageTop" :class="{ 'hidden': !isVisible }" @mouseenter="showHeader" @mouseleave="startHideTimer">
     <sequence2></sequence2>
-    <div class="left"></div>
+    <div class="left">
+      <div class="datetime">
+        {{ currentDateTime }}
+      </div>
+    </div>
     <div class="title">
       <span :data-text="name">{{ name }}</span>
     </div>
     <div class="right">
-      <div class="datetime">
-        {{ currentDateTime }}
-      </div>
+
+      <VideoSelector> </VideoSelector>
+
     </div>
   </div>
 </template>
@@ -16,6 +20,7 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from "vue";
 import sequence2 from "./sequence2/index.vue";
+import VideoSelector from "@/components/videoSelector/index.vue";
 const props = defineProps({
   name: {
     type: String,
@@ -160,7 +165,20 @@ onUnmounted(() => {
   height: auto;
   position: absolute;
   left: 20px;
-  top: 5px;
+  // top: 5px;
+
+  .datetime {
+    font-size: 16px;
+    font-family: DIN, Arial, sans-serif;
+    font-weight: 400;
+    color: #ffffff;
+    text-shadow: 0 0 8px #02d5fa;
+    margin-right: 20px;
+    margin-top: 50px;
+    pointer-events: initial;
+    white-space: nowrap;
+    letter-spacing: 1px;
+  }
 
   .weather-info {
     pointer-events: initial;
@@ -247,30 +265,19 @@ onUnmounted(() => {
 }
 
 .right {
+  background: #000;
   display: flex;
   justify-content: flex-end;
   align-items: center;
   flex-wrap: nowrap;
   flex-direction: row;
   align-content: flex-start;
-  width: 300px;
-  height: 24px;
+  // width: 300px;
+  // height: 24px;
   position: absolute;
-  right: 0;
-  top: 0px;
+  right: 20px;
+  top: 5px;
 
-  .datetime {
-    font-size: 16px;
-    font-family: DIN, Arial, sans-serif;
-    font-weight: 400;
-    color: #ffffff;
-    text-shadow: 0 0 8px #02d5fa;
-    margin-right: 20px;
-    margin-top: 70px;
-    pointer-events: initial;
-    white-space: nowrap;
-    letter-spacing: 1px;
-  }
 
   img {
     width: 17px;

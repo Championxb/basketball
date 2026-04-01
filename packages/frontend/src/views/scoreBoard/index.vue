@@ -1,11 +1,11 @@
 <template>
     <div class="score-board">
         <header class="header">
-            <button class="test-btn" @click="testAnimation">测试动画</button>
+            <!-- <button class="test-btn" @click="testAnimation">测试动画</button> -->
             <!-- <div class="title">球员得分信息</div> -->
             <div class="summary">
                 <div>总得分：<strong style="color: #2a9cf3;  font-size: 20px;">{{ totalPoints }}</strong></div>
-                <div>场上人数：<strong style="color: #2a9cf3;  font-size: 20px;">{{ playersList.length }}</strong></div>
+                <!-- <div>场上人数：<strong style="color: #2a9cf3;  font-size: 20px;">{{ playersList.length }}</strong></div> -->
                 <div>最高分：<strong style="color: #2a9cf3;  font-size: 20px;">{{ topScore }}</strong></div>
             </div>
             <!-- <div class="controls">
@@ -21,22 +21,22 @@
 
         <div class="table">
             <div class="row head">
-                <div class="cell num">#</div>
-                <div class="cell name">球员</div>
+                <!-- <div class="cell num">#</div> -->
+                <div class="cell name">球员ID</div>
                 <div class="cell stat">得分</div>
-                <div class="cell stat">篮板</div>
-                <div class="cell stat">助攻</div>
+                <!-- <div class="cell stat">篮板</div> -->
+                <!-- <div class="cell stat">助攻</div> -->
                 <div class="cell pct">得分占比</div>
             </div>
             <!-- <vue-seamless-scroll class="list" :data="sortedPlayers" direction="top" :steep="0.3" roller :distance="10"> -->
             <transition-group name="bubble" class="list">
                 <div class="row content" v-for="(p, idx) in sortedPlayers" :key="p.id ?? idx"
                     :class="{ highlight: p.points === topScore }">
-                    <div class="cell num">{{ p.number ?? idx + 1 }}</div>
+                    <div class="cell num">{{ p.playerId ?? idx + 1 }}号</div>
                     <div class="cell name">{{ p.name }}</div>
                     <div class="cell stat">{{ p.points }}</div>
-                    <div class="cell stat">{{ p.rebounds ?? 0 }}</div>
-                    <div class="cell stat">{{ p.assists ?? 0 }}</div>
+                    <!-- <div class="cell stat">{{ p.rebounds ?? 0 }}</div> -->
+                    <!-- <div class="cell stat">{{ p.assists ?? 0 }}</div> -->
                     <div class="cell pct">
                         <div class="bar">
                             <div class="fill" :style="{ width: percent(p) + '%' }"></div>
@@ -147,7 +147,7 @@ const { sortBy } = toRefs(state);
 <style lang="scss" scoped>
 .score-board {
     // height: calc(100% - 5px);
-    max-width: calc(100% - 20px);
+    max-width: calc(80% - 20px);
     margin: 0 auto;
     background: linear-gradient(180deg, rgba(2, 18, 34, 0.6), rgba(6, 30, 50, 0.35));
     border-radius: 8px;
@@ -158,9 +158,9 @@ const { sortBy } = toRefs(state);
 
     .header {
         display: flex;
-        justify-content: space-between;
+        justify-content: center;
         align-items: center;
-        padding: 0px 20px;
+        // padding: 0px 20px;
         // border-bottom: 1px solid rgba(255, 255, 255, 0.04);
         // background: #000;
 
@@ -330,7 +330,8 @@ const { sortBy } = toRefs(state);
         }
 
         .cell.num {
-            width: 48px;
+            // width: 48px;
+             width: 80px;
             text-align: center
         }
 

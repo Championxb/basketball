@@ -11,10 +11,8 @@ const apiClient = axios.create({
 // 请求拦截器
 apiClient.interceptors.request.use(
     (config) => {
-        // 在发送请求之前做些什么
-        // 例如：添加token
-        // 使用相对路径，让Vite代理处理请求转发
-        if (localStorage.getItem('token')) {
+        // 在发送请求之前做
+        if (!config.headers.Authorization && localStorage.getItem('token')) {
             config.headers.Authorization = `Bearer ${localStorage.getItem('token')}`;
         }
         return config;
